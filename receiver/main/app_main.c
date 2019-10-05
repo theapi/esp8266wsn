@@ -17,10 +17,14 @@
 #define GPIO_OUTPUT_IO_0    2
 #define GPIO_OUTPUT_PIN_SEL  (1ULL<<GPIO_OUTPUT_IO_0)
 
-/* The event bit that signifies there is enough light to use the LEDs */
-#define EV_LIGHT_BIT ( 1 << 0 )
+/* The event bit that signifies there is not enough light to use the LEDs */
+#define EV_DARK_BIT ( 1 << 0 )
 
 static const char *TAG = "wsn_receiver";
+
+
+/* What gets displayed on the LEDs */
+uint8_t display = 1;
 
 /* For sharing flags across tasks. */
 EventGroupHandle_t xEventGroupHandle;
@@ -39,24 +43,36 @@ static esp_err_t write_byte(uint8_t data)
 static void spi_master_write_slave_task(void *arg)
 {
     EventBits_t bits;
-    uint8_t display = 1;
-
     while (1) {
         bits = xEventGroupGetBits(xEventGroupHandle);
 
         ESP_LOGI(TAG, "bits: %d", (int)bits);
-        if( ( bits & EV_LIGHT_BIT ) != 0 ) {
+        if( ( bits & EV_DARK_BIT ) != 1 ) {
             if (display == 0) {
               display = 1;
             }
             write_byte(display);
             display = display << 1;
-        } else {
-          // Turn off the LEDs
-          write_byte(0);
         }
 
         vTaskDelay(1000 / portTICK_RATE_MS);
+    }
+}
+
+void displayOffTask(void *pvParameters)
+{
+    EventBits_t bits;
+    while(1) {
+        bits = xEventGroupWaitBits(
+            xEventGroupHandle,
+            EV_DARK_BIT,
+            pdFALSE,
+            pdTRUE,
+            portMAX_DELAY );
+        if( ( bits & EV_DARK_BIT ) != 0 ) {
+            // Turn off the LEDs
+            write_byte(0);
+        }
     }
 }
 
@@ -76,9 +92,9 @@ static void adc_task()
     while (1) {
         if (ESP_OK == adc_read(&val)) {
             if (val > 200) {
-              xEventGroupSetBits(xEventGroupHandle, EV_LIGHT_BIT);
+              xEventGroupClearBits(xEventGroupHandle, EV_DARK_BIT);
             } else if (val < 150) {
-              xEventGroupClearBits(xEventGroupHandle, EV_LIGHT_BIT);
+              xEventGroupSetBits(xEventGroupHandle, EV_DARK_BIT);
             }
             ESP_LOGI(TAG, "adc read: %d", val);
         }
@@ -118,6 +134,8 @@ void setupSPI() {
 
     // create spi_master_write_slave_task
     xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task", 2048, NULL, 10, NULL);
+    xTaskCreate(displayOffTask, "displayOffTask", 1024, NULL, 5, NULL);
+
 }
 
 void setupADC() {
