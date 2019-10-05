@@ -1,0 +1,17 @@
+{
+  "files.associations": {
+    "*.inc": "php",
+    "*.module": "php",
+    "*.install": "php",
+    "*.theme": "php",
+    "*.tpl.php": "php",
+    "*.test": "php",
+    "*.php": "php",
+    "array": "c",
+    "string": "c",
+    "esp_system.h": "c",
+    "stdio.h": "c",
+    "chrono": "c",
+    "algorithm": "c"
+  }
+}
