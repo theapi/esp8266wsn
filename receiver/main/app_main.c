@@ -130,5 +130,5 @@ void app_main(void)
 
     xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task", 2048, NULL, 10, NULL);
     xTaskCreate(displayOffTask, "displayOffTask", 1024, NULL, 5, NULL);
-    xTaskCreate(blinkTask, "blinkTask", 1024, NULL, 2, NULL);
+    xTaskCreate(blinkTask, "blinkTask", 1024, NULL, 10, NULL);
 }
