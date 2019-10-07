@@ -3,26 +3,46 @@
 #include "driver/spi.h"
 #include "driver/gpio.h"
 
-// Write an 8-bit data
-esp_err_t display_write_byte(uint8_t data)
-{
-    uint32_t buf = data << 24;
+DISPLAY_HandleTypeDef hdisplay;
+
+void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay) {
+    // Write 8-bit data to the shift register.
+    uint32_t buf = hdisplay->pixels << 24;
     spi_trans_t trans = {0};
     trans.mosi = &buf;
     trans.bits.mosi = 8;
+
+    if (hdisplay->state == DISPLAY_STATE_ON) {
+      // If the 3rd pixel blue is set then turn on that pin.
+      if ((hdisplay->pixels >> 8) & 1) {
+        gpio_set_level(DISPLAY_PIN_BLUE, 1);
+      } else {
+        gpio_set_level(DISPLAY_PIN_BLUE, 0);
+      }
+    } else {
+      buf = 0;
+      gpio_set_level(DISPLAY_PIN_BLUE, 0);
+    }
+
     spi_trans(HSPI_HOST, trans);
-    return ESP_OK;
 }
 
+void DISPLAY_On(DISPLAY_HandleTypeDef *hdisplay) {
+  hdisplay->state = DISPLAY_STATE_ON;
+}
 
-static void setupBlink() {
+void DISPLAY_Off(DISPLAY_HandleTypeDef *hdisplay) {
+  hdisplay->state = DISPLAY_STATE_OFF;
+}
+
+static void setupGPIO() {
     gpio_config_t io_conf;
     //disable interrupt
     io_conf.intr_type = GPIO_INTR_DISABLE;
     //set as output mode
     io_conf.mode = GPIO_MODE_OUTPUT;
     //bit mask of the pins that you want to set,e.g.GPIO15/16
-    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    io_conf.pin_bit_mask = (1ULL << DISPLAY_PIN_BLUE);
     //disable pull-down mode
     io_conf.pull_down_en = 0;
     //disable pull-up mode
@@ -45,9 +65,7 @@ static void setupSPI() {
 
 }
 
-
-
-void display_setup() {
-    setupBlink();
+void DISPLAY_Init() {
+    setupGPIO();
     setupSPI();
 }

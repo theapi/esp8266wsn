@@ -6,13 +6,30 @@ extern "C" {
 
 #include "esp_system.h"
 
-#define GPIO_OUTPUT_IO_0    4
-#define GPIO_OUTPUT_PIN_SEL  (1ULL<<GPIO_OUTPUT_IO_0)
+#define DISPLAY_PIN_BLUE 4
 
-void display_setup();
-void display_Off ();
+/**
+  * @brief  DISPLAY State structures definition
+  */
+typedef enum {
+  DISPLAY_STATE_ON,
+  DISPLAY_STATE_OFF,
+} DISPLAY_StateTypeDef;
 
-esp_err_t display_write_byte(uint8_t data);
+/**
+  * @brief  DISPLAY Handle Structure definition
+  */
+typedef struct __DISPLAY_HandleTypeDef {
+  uint16_t pixels; /* Three rgb leds, either on or off, one bit each colour xxxxxxxRGBRGBRGB */
+  DISPLAY_StateTypeDef state;  /* On/off */
+} DISPLAY_HandleTypeDef;
+
+extern DISPLAY_HandleTypeDef hdisplay;
+
+void DISPLAY_Init();
+void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay);
+void DISPLAY_On(DISPLAY_HandleTypeDef *hdisplay);
+void DISPLAY_Off(DISPLAY_HandleTypeDef *hdisplay);
 
 #ifdef __cplusplus
 }
