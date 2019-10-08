@@ -12,6 +12,7 @@
     "esp_system.h": "c",
     "stdio.h": "c",
     "chrono": "c",
-    "algorithm": "c"
+    "algorithm": "c",
+    "display.h": "c"
   }
 }
