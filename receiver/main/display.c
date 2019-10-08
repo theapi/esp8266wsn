@@ -28,11 +28,19 @@ void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay) {
 }
 
 void DISPLAY_On(DISPLAY_HandleTypeDef *hdisplay) {
+  DISPLAY_StateTypeDef tmp = hdisplay->state;
   hdisplay->state = DISPLAY_STATE_ON;
+  if (tmp == DISPLAY_STATE_OFF) {
+    DISPLAY_Update(hdisplay);
+  }
 }
 
 void DISPLAY_Off(DISPLAY_HandleTypeDef *hdisplay) {
+  DISPLAY_StateTypeDef tmp = hdisplay->state;
   hdisplay->state = DISPLAY_STATE_OFF;
+  if (tmp == DISPLAY_STATE_ON) {
+    DISPLAY_Update(hdisplay);
+  }
 }
 
 static void setupGPIO() {
