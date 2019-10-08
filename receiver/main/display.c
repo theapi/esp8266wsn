@@ -13,34 +13,34 @@ void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay) {
     trans.bits.mosi = 8;
 
     if (hdisplay->state == DISPLAY_STATE_ON) {
-      // If the 3rd pixel blue is set then turn on that pin.
-      if ((hdisplay->pixels >> 8) & 1) {
-        gpio_set_level(DISPLAY_PIN_BLUE, 1);
-      } else {
-        gpio_set_level(DISPLAY_PIN_BLUE, 0);
-      }
+        // If the 3rd pixel blue is set then turn on that pin.
+        if ((hdisplay->pixels >> 8) & 1) {
+            gpio_set_level(DISPLAY_PIN_BLUE, 1);
+        } else {
+            gpio_set_level(DISPLAY_PIN_BLUE, 0);
+        }
     } else {
-      buf = 0;
-      gpio_set_level(DISPLAY_PIN_BLUE, 0);
+        buf = 0;
+        gpio_set_level(DISPLAY_PIN_BLUE, 0);
     }
 
     spi_trans(HSPI_HOST, trans);
 }
 
 void DISPLAY_On(DISPLAY_HandleTypeDef *hdisplay) {
-  DISPLAY_StateTypeDef tmp = hdisplay->state;
-  hdisplay->state = DISPLAY_STATE_ON;
-  if (tmp == DISPLAY_STATE_OFF) {
-    DISPLAY_Update(hdisplay);
-  }
+    DISPLAY_StateTypeDef tmp = hdisplay->state;
+    hdisplay->state = DISPLAY_STATE_ON;
+    if (tmp == DISPLAY_STATE_OFF) {
+        DISPLAY_Update(hdisplay);
+    }
 }
 
 void DISPLAY_Off(DISPLAY_HandleTypeDef *hdisplay) {
-  DISPLAY_StateTypeDef tmp = hdisplay->state;
-  hdisplay->state = DISPLAY_STATE_OFF;
-  if (tmp == DISPLAY_STATE_ON) {
-    DISPLAY_Update(hdisplay);
-  }
+    DISPLAY_StateTypeDef tmp = hdisplay->state;
+    hdisplay->state = DISPLAY_STATE_OFF;
+    if (tmp == DISPLAY_STATE_ON) {
+        DISPLAY_Update(hdisplay);
+    }
 }
 
 static void setupGPIO() {

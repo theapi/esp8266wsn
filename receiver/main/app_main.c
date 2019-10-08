@@ -16,94 +16,31 @@
 
 #include "display.h"
 
-
-
-/* The event bit that signifies there is not enough light to use the LEDs */
-//#define EV_DARK_BIT ( 1 << 0 )
-
 static const char *TAG = "receiver";
 
-
-/* What gets displayed on the LEDs */
-//uint8_t display = 1;
-
-/* For sharing flags across tasks. */
-//EventGroupHandle_t xEventGroupHandle;
-
-// // Write an 8-bit data
-// static esp_err_t write_byte(uint8_t data)
-// {
-//     uint32_t buf = data << 24;
-//     spi_trans_t trans = {0};
-//     trans.mosi = &buf;
-//     trans.bits.mosi = 8;
-//     spi_trans(HSPI_HOST, trans);
-//     return ESP_OK;
-// }
-
-static void spi_master_write_slave_task(void *data)
-{
-    //DISPLAY_HandleTypeDef hdisplay = *(DISPLAY_HandleTypeDef *) data;
-    //EventBits_t bits;
+static void spi_master_write_slave_task(void *data) {
     while (1) {
-        //bits = xEventGroupGetBits(xEventGroupHandle);
-
-        //ESP_LOGI(TAG, "bits: %d", (int)bits);
         ESP_LOGI(TAG, "hdisplay pixels: %d", (int)hdisplay.pixels);
         ESP_LOGI(TAG, "hdisplay state: %d", (int)hdisplay.state);
-        //if( ( bits & EV_DARK_BIT ) != 1 ) {
-            hdisplay.pixels = hdisplay.pixels << 1;
-            if (hdisplay.pixels > 256 || hdisplay.pixels == 0) {
-              hdisplay.pixels = 1;
-            }
-        //}
+        hdisplay.pixels = hdisplay.pixels << 1;
+        if (hdisplay.pixels > 256 || hdisplay.pixels == 0) {
+          hdisplay.pixels = 1;
+        }
 
         DISPLAY_Update(&hdisplay);
         vTaskDelay(1000 / portTICK_RATE_MS);
     }
 }
 
-// void displayOffTask(void *data)
-// {
-//     DISPLAY_HandleTypeDef hdisplay = *(DISPLAY_HandleTypeDef *) data;
-//     EventBits_t bits;
-//     while(1) {
-//         bits = xEventGroupWaitBits(
-//             xEventGroupHandle,
-//             EV_DARK_BIT,
-//             pdFALSE,
-//             pdTRUE,
-//             portMAX_DELAY );
-//         if( ( bits & EV_DARK_BIT ) != 0 ) {
-//             // Turn off the LEDs
-//             DISPLAY_Off(&hdisplay);
-//         }
-//     }
-// }
-
-// void blinkTask(void *pvParameters)
-// {
-//     int cnt = 0;
-//     while(1) {
-//         vTaskDelay(1000 / portTICK_RATE_MS);
-//         //gpio_set_level(GPIO_OUTPUT_IO_0, ++cnt % 2);
-//         ESP_LOGI(TAG, "blink: %d", cnt);
-//     }
-// }
-
-static void adc_task(void *data)
-{
-    //DISPLAY_HandleTypeDef hdisplay = *(DISPLAY_HandleTypeDef *) data;
+static void adc_task(void *data) {
     uint16_t val;
 
     while (1) {
         if (ESP_OK == adc_read(&val)) {
             if (val > 200) {
               DISPLAY_On(&hdisplay);
-              //xEventGroupClearBits(xEventGroupHandle, EV_DARK_BIT);
             } else if (val < 150) {
               DISPLAY_Off(&hdisplay);
-              //xEventGroupSetBits(xEventGroupHandle, EV_DARK_BIT);
             }
             ESP_LOGI(TAG, "adc read: %d", val);
         }
@@ -116,26 +53,16 @@ void setupADC() {
     adc_config.mode = ADC_READ_TOUT_MODE;
     adc_config.clk_div = 8; // ADC sample collection clock = 80MHz/clk_div = 10MHz
     if (adc_init(&adc_config) != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: adc_init");
-      esp_restart();
+        ESP_LOGE(TAG, "Failed: adc_init");
+        esp_restart();
     }
 }
 
-void app_main(void)
-{
+void app_main(void) {
     DISPLAY_Init();
     // Configure ADC after the SPI
     setupADC();
 
-    // xEventGroupHandle = xEventGroupCreate();
-    // if (xEventGroupHandle == NULL) {
-    //   esp_restart();
-    // }
-
     xTaskCreate(adc_task, "adc_task", 1024, NULL, 5, NULL);
     xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task", 2048, NULL, 10, NULL);
-    //xTaskCreate(adc_task, "adc_task", 1024, &hdisplay, 5, NULL);
-    //xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task", 2048, &hdisplay, 10, NULL);
-    //xTaskCreate(displayOffTask, "displayOffTask", 1024, &hdisplay, 5, NULL);
-    //xTaskCreate(blinkTask, "blinkTask", 1024, NULL, 10, NULL);
 }
