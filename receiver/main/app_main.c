@@ -167,6 +167,12 @@ static void app_espnow_task(void *pvParameter)
                 ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &recv_state, &recv_seq, &recv_magic);
                 free(recv_cb->data);
                 if (ret == APP_ESPNOW_DATA_BROADCAST) {
+                    if (count > 0x1FF) {
+                      count = 0;
+                    }
+                    hdisplay.pixels = ++count;
+                    DISPLAY_Update(&hdisplay);
+
                     ESP_LOGI(TAG, "Receive %dth broadcast data from: "MACSTR", len: %d", recv_seq, MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
                     // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from: "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
                     // // Write data back to the UART
@@ -215,19 +221,19 @@ static esp_err_t app_espnow_init(void)
     return ESP_OK;
 }
 
-static void spi_master_write_slave_task(void *data) {
-    while (1) {
-        ESP_LOGI(TAG, "hdisplay pixels: %d", (int)hdisplay.pixels);
-        ESP_LOGI(TAG, "hdisplay state: %d", (int)hdisplay.state);
-        hdisplay.pixels = hdisplay.pixels << 1;
-        if (hdisplay.pixels > 256 || hdisplay.pixels == 0) {
-          hdisplay.pixels = 1;
-        }
+// static void spi_master_write_slave_task(void *data) {
+//     while (1) {
+//         ESP_LOGI(TAG, "hdisplay pixels: %d", (int)hdisplay.pixels);
+//         ESP_LOGI(TAG, "hdisplay state: %d", (int)hdisplay.state);
+//         hdisplay.pixels = hdisplay.pixels << 1;
+//         if (hdisplay.pixels > 256 || hdisplay.pixels == 0) {
+//           hdisplay.pixels = 1;
+//         }
 
-        DISPLAY_Update(&hdisplay);
-        vTaskDelay(1000 / portTICK_RATE_MS);
-    }
-}
+//         DISPLAY_Update(&hdisplay);
+//         vTaskDelay(1000 / portTICK_RATE_MS);
+//     }
+// }
 
 static void adc_task(void *data) {
     uint16_t val;
@@ -286,5 +292,8 @@ void app_main(void) {
     }
 
     xTaskCreate(adc_task, "adc_task", 1024, NULL, 5, NULL);
-    xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task", 2048, NULL, 10, NULL);
+    //xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task", 2048, NULL, 10, NULL);
+
+    hdisplay.pixels = 0x1FF;
+    DISPLAY_Update(&hdisplay);
 }
