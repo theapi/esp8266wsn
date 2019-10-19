@@ -1,11 +1,16 @@
+/* ESPNOW Example
 
+   This example code is in the Public Domain (or CC0 licensed, at your option.)
+
+   Unless required by applicable law or agreed to in writing, this
+   software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+   CONDITIONS OF ANY KIND, either express or implied.
+*/
 
 #include "esp_now.h"
 
 #ifndef ESPNOW_APP_H
 #define ESPNOW_APP_H
-
-#define CONFIG_ESPNOW_CHANNEL 1
 
 /* ESPNOW can work in both station and softap mode. It is configured in menuconfig. */
 #if CONFIG_STATION_MODE
@@ -16,7 +21,7 @@
 #define ESPNOW_WIFI_IF   ESP_IF_WIFI_AP
 #endif
 
-#define ESPNOW_QUEUE_SIZE 6
+#define ESPNOW_QUEUE_SIZE           6
 
 #define IS_BROADCAST_ADDR(addr) (memcmp(addr, app_broadcast_mac, ESP_NOW_ETH_ALEN) == 0)
 
