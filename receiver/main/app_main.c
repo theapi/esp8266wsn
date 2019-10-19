@@ -133,6 +133,8 @@ int app_espnow_data_parse(uint8_t *data, uint16_t data_len, uint8_t *state, uint
         return -1;
     }
 
+    ESP_LOGI(TAG, "DATA:%d", (int)*buf->payload);
+
     *state = buf->state;
     *seq = buf->seq_num;
     *magic = buf->magic;
@@ -245,7 +247,7 @@ static void adc_task(void *data) {
             } else if (val < 150) {
               DISPLAY_Off(&hdisplay);
             }
-            ESP_LOGI(TAG, "adc read: %d", val);
+            //ESP_LOGI(TAG, "adc read: %d", val);
         }
         vTaskDelay(500 / portTICK_RATE_MS);
     }
