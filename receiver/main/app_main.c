@@ -223,9 +223,9 @@ static void adc_task(void *data) {
 
     while (1) {
         if (ESP_OK == adc_read(&val)) {
-            if (val > 200) {
+            if (val > 120) {
               DISPLAY_On(&hdisplay);
-            } else if (val < 150) {
+            } else if (val < 100) {
               DISPLAY_Off(&hdisplay);
             }
             //ESP_LOGI(TAG, "adc read: %d", val);
