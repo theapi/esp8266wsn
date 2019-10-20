@@ -39,24 +39,12 @@ char uart_buffer[UART_BUF_SIZE];
 static xQueueHandle app_espnow_queue;
 uint32_t count = 0;
 
-static esp_err_t app_event_handler(void *ctx, system_event_t *event)
-{
-    switch(event->event_id) {
-    case SYSTEM_EVENT_STA_START:
-        ESP_LOGI(TAG, "WiFi started");
-        break;
-    default:
-        break;
-    }
-    return ESP_OK;
-}
-
 /* WiFi should start before using ESPNOW */
 static esp_err_t app_wifi_init(void)
 {
     tcpip_adapter_init();
 
-    if (esp_event_loop_init(app_event_handler, NULL) != ESP_OK) {
+    if (esp_event_loop_init(NULL, NULL) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_event_loop_init");
       return ESP_FAIL;
     }
@@ -252,7 +240,7 @@ static void adc_task(void *data) {
             if (val > 200) {
               DISPLAY_On(&hdisplay);
             } else if (val < 150) {
-              //DISPLAY_Off(&hdisplay);
+              DISPLAY_Off(&hdisplay);
             }
             //ESP_LOGI(TAG, "adc read: %d", val);
         }
