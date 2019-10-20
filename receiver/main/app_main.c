@@ -218,20 +218,6 @@ static esp_err_t app_espnow_init(void)
     return ESP_OK;
 }
 
-// static void spi_master_write_slave_task(void *data) {
-//     while (1) {
-//         ESP_LOGI(TAG, "hdisplay pixels: %d", (int)hdisplay.pixels);
-//         ESP_LOGI(TAG, "hdisplay state: %d", (int)hdisplay.state);
-//         hdisplay.pixels = hdisplay.pixels << 1;
-//         if (hdisplay.pixels > 256 || hdisplay.pixels == 0) {
-//           hdisplay.pixels = 1;
-//         }
-
-//         DISPLAY_Update(&hdisplay);
-//         vTaskDelay(1000 / portTICK_RATE_MS);
-//     }
-// }
-
 static void adc_task(void *data) {
     uint16_t val;
 
