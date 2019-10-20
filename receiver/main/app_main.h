@@ -53,13 +53,6 @@ enum {
     APP_ESPNOW_DATA_MAX,
 };
 
-/* Sensor payload. */
-typedef struct {
-    uint16_t device_id;
-    uint16_t adc;                         //ADC reading
-    uint16_t crc;                         //CRC16 value of ESPNOW data.
-} __attribute__((packed)) sensor_payload_t;
-
 /* User defined field of ESPNOW data in this example. */
 typedef struct {
     uint8_t type;                         //Broadcast or unicast ESPNOW data.

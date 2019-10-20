@@ -28,6 +28,7 @@
 
 #include "app_main.h"
 #include "display.h"
+#include "payload.h"
 
 static const char *TAG = "receiver";
 
@@ -38,24 +39,12 @@ char uart_buffer[UART_BUF_SIZE];
 static xQueueHandle app_espnow_queue;
 uint32_t count = 0;
 
-static esp_err_t app_event_handler(void *ctx, system_event_t *event)
-{
-    switch(event->event_id) {
-    case SYSTEM_EVENT_STA_START:
-        ESP_LOGI(TAG, "WiFi started");
-        break;
-    default:
-        break;
-    }
-    return ESP_OK;
-}
-
 /* WiFi should start before using ESPNOW */
 static esp_err_t app_wifi_init(void)
 {
     tcpip_adapter_init();
 
-    if (esp_event_loop_init(app_event_handler, NULL) != ESP_OK) {
+    if (esp_event_loop_init(NULL, NULL) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_event_loop_init");
       return ESP_FAIL;
     }
@@ -123,42 +112,37 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int
 }
 
 /* Parse received ESPNOW data. */
-int app_espnow_data_parse(uint8_t *data, uint16_t data_len, uint16_t *adc)
+int app_espnow_data_parse(uint8_t *data, uint16_t data_len, payload_sensor_t *payload)
 {
-    //app_espnow_data_t *buf = (app_espnow_data_t *)data;
-    sensor_payload_t *buf = (sensor_payload_t *)data;
+    int i = 0;
+    payload_sensor_t *buf = (payload_sensor_t *)data;
     uint16_t crc, crc_cal = 0;
 
-    if (data_len < sizeof(app_espnow_data_t)) {
+    if (data_len < sizeof(payload_sensor_t)) {
         ESP_LOGE(TAG, "Receive ESPNOW data too short, len:%d", data_len);
-        return -1;
+        return ESP_FAIL;
     }
 
-    ESP_LOGI(TAG, "ADC:%d", buf->adc);
+    ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
+    ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
+    for (i = 0; i < PAYLOAD_ADC_NUM; i++) {
+        payload->adc[i] = buf->adc[i];
+    }
 
-    // ESP_LOGI(TAG, "sizeof:%d", sizeof(buf->payload));
-    // ESP_LOGI(TAG, "DATA 0:%d", buf->payload[0]);
-    // ESP_LOGI(TAG, "DATA 1:%d", buf->payload[1]);
-    // ESP_LOGI(TAG, "DATA 2:%d", buf->payload[2]);
-
-    // *state = buf->state;
-    // *seq = buf->seq_num;
-    *adc = buf->adc;
     crc = buf->crc;
     buf->crc = 0;
-    crc_cal = crc16_le(UINT16_MAX, (uint8_t const *)buf, data_len);
+    crc_cal = crc16_le(UINT16_MAX, (uint8_t const *)data, data_len);
 
     if (crc_cal == crc) {
-        return APP_ESPNOW_DATA_BROADCAST;
+        return ESP_OK;
     }
 
-    return -1;
+    return ESP_FAIL;
 }
 
 static void app_espnow_task(void *pvParameter)
 {
     app_espnow_event_t evt;
-    uint16_t recv_adc = 0;
     int ret;
 
     vTaskDelay(500 / portTICK_RATE_MS);
@@ -169,18 +153,24 @@ static void app_espnow_task(void *pvParameter)
             case APP_ESPNOW_RECV_CB:
             {
                 app_espnow_event_recv_cb_t *recv_cb = &evt.info.recv_cb;
+                payload_sensor_t payload;
 
-                ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &recv_adc);
+                ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &payload);
                 free(recv_cb->data);
-                if (ret == APP_ESPNOW_DATA_BROADCAST) {
+                if (ret == ESP_OK) {
                     if (count > 0x1FF) {
                       count = 0;
                     }
                     //hdisplay.pixels = ++count;
-                    hdisplay.pixels = recv_adc;
+                    hdisplay.pixels = payload.adc[0];
                     DISPLAY_Update(&hdisplay);
 
-                    ESP_LOGI(TAG, "Adc %d broadcast data from: "MACSTR", len: %d", recv_adc, MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
+                    ESP_LOGI(TAG, "ADC_1: %d, ADC_2: %d data from: "MACSTR", len: %d",
+                      payload.adc[0],
+                      payload.adc[1],
+                      MAC2STR(recv_cb->mac_addr),
+                      recv_cb->data_len
+                    );
                     // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from: "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
                     // // Write data back to the UART
                     // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
@@ -228,29 +218,15 @@ static esp_err_t app_espnow_init(void)
     return ESP_OK;
 }
 
-// static void spi_master_write_slave_task(void *data) {
-//     while (1) {
-//         ESP_LOGI(TAG, "hdisplay pixels: %d", (int)hdisplay.pixels);
-//         ESP_LOGI(TAG, "hdisplay state: %d", (int)hdisplay.state);
-//         hdisplay.pixels = hdisplay.pixels << 1;
-//         if (hdisplay.pixels > 256 || hdisplay.pixels == 0) {
-//           hdisplay.pixels = 1;
-//         }
-
-//         DISPLAY_Update(&hdisplay);
-//         vTaskDelay(1000 / portTICK_RATE_MS);
-//     }
-// }
-
 static void adc_task(void *data) {
     uint16_t val;
 
     while (1) {
         if (ESP_OK == adc_read(&val)) {
-            if (val > 200) {
+            if (val > 120) {
               DISPLAY_On(&hdisplay);
-            } else if (val < 150) {
-              //DISPLAY_Off(&hdisplay);
+            } else if (val < 100) {
+              DISPLAY_Off(&hdisplay);
             }
             //ESP_LOGI(TAG, "adc read: %d", val);
         }
