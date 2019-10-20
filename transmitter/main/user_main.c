@@ -18,13 +18,14 @@
 #include "crc.h"
 #include "user_main.h"
 #include "driver/gpio.h"
+#include "payload.h"
 
 static const char *TAG = "transmitter";
 
 uint32_t count = 0;
 
 static uint8_t app_broadcast_mac[ESP_NOW_ETH_ALEN] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-static uint16_t s_app_espnow_seq[APP_ESPNOW_DATA_MAX] = { 0, 0 };
+//static uint16_t s_app_espnow_seq[APP_ESPNOW_DATA_MAX] = { 0, 0 };
 
 static esp_err_t app_event_handler(void *ctx, system_event_t *event)
 {
@@ -82,24 +83,13 @@ static void app_wifi_init(void)
 /* Prepare ESPNOW data to be sent. */
 void app_espnow_data_prepare(app_espnow_send_param_t *send_param)
 {
-    //app_espnow_data_t *buf = (app_espnow_data_t *)send_param->buffer;
-    sensor_payload_t *buf = (sensor_payload_t *)send_param->buffer;
-    //int i = 0;
-
-    assert(send_param->len >= sizeof(sensor_payload_t));
-
-    //buf->type = IS_BROADCAST_ADDR(send_param->dest_mac) ? APP_ESPNOW_DATA_BROADCAST : APP_ESPNOW_DATA_UNICAST;
-    //buf->state = send_param->state;
-    //buf->seq_num = s_app_espnow_seq[buf->type]++;
+    payload_sensor_t *buf = (payload_sensor_t *)send_param->buffer;
     buf->crc = 0;
-    buf->adc = count++;
+    buf->adc[0] = count++;
     if (count > 1024) {
       count = 1;
     }
-    // for (i = 0; i < send_param->len - sizeof(app_espnow_data_t); i++) {
-    //     buf->payload[i] = (uint8_t)i;
-    // }
-    // ESP_LOGI(TAG, "PAYLOAD size:%d", i);
+    buf->adc[1] = 3300; // will be the battery reading
     buf->crc = crc16_le(UINT16_MAX, (uint8_t const *)buf, send_param->len);
 }
 
@@ -167,6 +157,8 @@ void app_transmit() {
             if (esp_now_send(send_param->dest_mac, send_param->buffer, send_param->len) != ESP_OK) {
                 ESP_LOGE(TAG, "Send error");
                 //app_espnow_deinit(send_param);
+            } else  {
+              ESP_LOGI(TAG, "Sent");
             }
         }
     }

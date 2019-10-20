@@ -28,6 +28,7 @@
 
 #include "app_main.h"
 #include "display.h"
+#include "payload.h"
 
 static const char *TAG = "receiver";
 
@@ -123,27 +124,21 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data, int
 }
 
 /* Parse received ESPNOW data. */
-int app_espnow_data_parse(uint8_t *data, uint16_t data_len, uint16_t *adc)
+int app_espnow_data_parse(uint8_t *data, uint16_t data_len, uint16_t adc[PAYLOAD_ADC_NUM])
 {
     //app_espnow_data_t *buf = (app_espnow_data_t *)data;
-    sensor_payload_t *buf = (sensor_payload_t *)data;
+    payload_sensor_t *buf = (payload_sensor_t *)data;
     uint16_t crc, crc_cal = 0;
 
-    if (data_len < sizeof(app_espnow_data_t)) {
+    if (data_len < sizeof(payload_sensor_t)) {
         ESP_LOGE(TAG, "Receive ESPNOW data too short, len:%d", data_len);
         return -1;
     }
 
-    ESP_LOGI(TAG, "ADC:%d", buf->adc);
+    ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
+    ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
 
-    // ESP_LOGI(TAG, "sizeof:%d", sizeof(buf->payload));
-    // ESP_LOGI(TAG, "DATA 0:%d", buf->payload[0]);
-    // ESP_LOGI(TAG, "DATA 1:%d", buf->payload[1]);
-    // ESP_LOGI(TAG, "DATA 2:%d", buf->payload[2]);
-
-    // *state = buf->state;
-    // *seq = buf->seq_num;
-    *adc = buf->adc;
+    *adc = *buf->adc;
     crc = buf->crc;
     buf->crc = 0;
     crc_cal = crc16_le(UINT16_MAX, (uint8_t const *)buf, data_len);
@@ -158,7 +153,7 @@ int app_espnow_data_parse(uint8_t *data, uint16_t data_len, uint16_t *adc)
 static void app_espnow_task(void *pvParameter)
 {
     app_espnow_event_t evt;
-    uint16_t recv_adc = 0;
+    uint16_t recv_adc[PAYLOAD_ADC_NUM] = {0};
     int ret;
 
     vTaskDelay(500 / portTICK_RATE_MS);
@@ -170,17 +165,17 @@ static void app_espnow_task(void *pvParameter)
             {
                 app_espnow_event_recv_cb_t *recv_cb = &evt.info.recv_cb;
 
-                ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &recv_adc);
+                ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, recv_adc);
                 free(recv_cb->data);
                 if (ret == APP_ESPNOW_DATA_BROADCAST) {
                     if (count > 0x1FF) {
                       count = 0;
                     }
                     //hdisplay.pixels = ++count;
-                    hdisplay.pixels = recv_adc;
+                    hdisplay.pixels = recv_adc[0];
                     DISPLAY_Update(&hdisplay);
 
-                    ESP_LOGI(TAG, "Adc %d broadcast data from: "MACSTR", len: %d", recv_adc, MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
+                    ESP_LOGI(TAG, "Adc %d broadcast data from: "MACSTR", len: %d", recv_adc[0], MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
                     // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from: "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr), recv_cb->data_len);
                     // // Write data back to the UART
                     // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
