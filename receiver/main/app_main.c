@@ -86,7 +86,7 @@ static esp_err_t app_wifi_init(void)
  * necessary data to a queue and handle it from a lower priority task. */
 static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
                                int len) {
-  app_espnow_event_t event;
+  app_espnow_event_t event = {0};
 
   if (mac_addr == NULL || data == NULL || len <= 0) {
     ESP_LOGE(TAG, "Receive cb arg error");
@@ -94,16 +94,16 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
   }
 
   memcpy(event.mac_addr, mac_addr, ESP_NOW_ETH_ALEN);
-  event.data = malloc(len);
-  if (event.data == NULL) {
-    ESP_LOGE(TAG, "Malloc receive data fail");
-    esp_restart();
-  }
+  // event.data = malloc(len);
+  // if (event.data == NULL) {
+  //   ESP_LOGE(TAG, "Malloc receive data fail");
+  //   esp_restart();
+  // }
   memcpy(event.data, data, len);
   event.data_len = len;
   if (xQueueSend(app_espnow_queue, &event, portMAX_DELAY) != pdTRUE) {
     ESP_LOGW(TAG, "Receive queue fail");
-    free(event.data);
+    //free(event.data);
     esp_restart();
   }
 }
@@ -120,6 +120,7 @@ int app_espnow_data_parse(uint8_t *data, uint16_t data_len,
     return ESP_FAIL;
   }
 
+  payload->device_id = buf->device_id;
   ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
   ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
   memcpy(payload->adc, buf->adc, sizeof(payload->adc));
@@ -146,7 +147,7 @@ static void app_espnow_task(void *pvParameter) {
     payload_sensor_t payload;
 
     ret = app_espnow_data_parse(event.data, event.data_len, &payload);
-    free(event.data);
+    //free(event.data);
     ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
       if (count > 0x1FF) {
@@ -156,7 +157,8 @@ static void app_espnow_task(void *pvParameter) {
       hdisplay.pixels = payload.adc[0];
       DISPLAY_Update(&hdisplay);
 
-      ESP_LOGI(TAG, "ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+      ESP_LOGI(TAG, "Device: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+                payload.device_id,
                 payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
                 event.data_len);
       // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:

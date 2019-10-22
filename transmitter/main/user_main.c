@@ -96,6 +96,7 @@ static esp_err_t app_espnow_init(void) {
 void app_espnow_data_prepare() {
   /* Map the buffer to the struct for ease of manipulation */
   payload_sensor_t *buf = (payload_sensor_t *)buffer;
+  buf->device_id = 1234;
   buf->crc = 0;
   buf->adc[0] = ++count;
   if (count > 1024) {
