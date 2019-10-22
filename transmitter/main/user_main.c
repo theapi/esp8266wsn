@@ -16,7 +16,6 @@
 #include "esp_now.h"
 #include "rom/ets_sys.h"
 #include "crc.h"
-#include "user_main.h"
 #include "driver/gpio.h"
 #include "payload.h"
 
@@ -50,7 +49,7 @@ static esp_err_t app_wifi_init(void)
       return ESP_FAIL;
     }
 
-    if (esp_wifi_set_mode(ESPNOW_WIFI_MODE) != ESP_OK) {
+    if (esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_set_mode");
       return ESP_FAIL;
     }
@@ -95,7 +94,7 @@ static esp_err_t app_espnow_init(void)
     }
     memset(peer, 0, sizeof(esp_now_peer_info_t));
     peer->channel = CONFIG_ESPNOW_CHANNEL;
-    peer->ifidx = ESPNOW_WIFI_IF;
+    peer->ifidx = ESP_IF_WIFI_STA;
     peer->encrypt = false;
     memcpy(peer->peer_addr, app_broadcast_mac, ESP_NOW_ETH_ALEN);
     if (esp_now_add_peer(peer) != ESP_OK) {
