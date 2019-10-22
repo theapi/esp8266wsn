@@ -23,7 +23,6 @@
 #include "driver/uart.h"
 
 #include "crc.h"
-#include "nvs_flash.h"
 #include "tcpip_adapter.h"
 
 #include "app_main.h"
@@ -49,6 +48,7 @@ static esp_err_t app_wifi_init(void)
     }
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    cfg.nvs_enable = 0;
     if (esp_wifi_init(&cfg) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_init");
       return ESP_FAIL;
@@ -249,12 +249,6 @@ void app_main(void) {
   // };
   // uart_param_config(UART_NUM_0, &uart_config);
   // uart_driver_install(UART_NUM_0, UART_BUF_SIZE * 2, 0, 0, NULL);
-
-  // Initialize NVS
-  if (nvs_flash_init() != ESP_OK) {
-    ESP_LOGE(TAG, "Failed: nvs_flash_init");
-    esp_restart();
-  }
 
   if (app_wifi_init() != ESP_OK) {
     esp_restart();
