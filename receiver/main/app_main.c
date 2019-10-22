@@ -86,25 +86,24 @@ static esp_err_t app_wifi_init(void)
  * necessary data to a queue and handle it from a lower priority task. */
 static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
                                int len) {
-  app_espnow_event_t evt;
-  app_espnow_event_recv_cb_t *recv_cb = &evt.info;
+  app_espnow_event_t event;
 
   if (mac_addr == NULL || data == NULL || len <= 0) {
     ESP_LOGE(TAG, "Receive cb arg error");
     return;
   }
 
-  memcpy(recv_cb->mac_addr, mac_addr, ESP_NOW_ETH_ALEN);
-  recv_cb->data = malloc(len);
-  if (recv_cb->data == NULL) {
+  memcpy(event.mac_addr, mac_addr, ESP_NOW_ETH_ALEN);
+  event.data = malloc(len);
+  if (event.data == NULL) {
     ESP_LOGE(TAG, "Malloc receive data fail");
     esp_restart();
   }
-  memcpy(recv_cb->data, data, len);
-  recv_cb->data_len = len;
-  if (xQueueSend(app_espnow_queue, &evt, portMAX_DELAY) != pdTRUE) {
+  memcpy(event.data, data, len);
+  event.data_len = len;
+  if (xQueueSend(app_espnow_queue, &event, portMAX_DELAY) != pdTRUE) {
     ESP_LOGW(TAG, "Receive queue fail");
-    free(recv_cb->data);
+    free(event.data);
     esp_restart();
   }
 }
@@ -112,7 +111,6 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
 /* Parse received ESPNOW data. */
 int app_espnow_data_parse(uint8_t *data, uint16_t data_len,
                           payload_sensor_t *payload) {
-  int i = 0;
   /* Map the data to the struct for ease of manipulation */
   payload_sensor_t *buf = (payload_sensor_t *)data;
   uint16_t crc, crc_cal = 0;
@@ -138,18 +136,17 @@ int app_espnow_data_parse(uint8_t *data, uint16_t data_len,
 }
 
 static void app_espnow_task(void *pvParameter) {
-  app_espnow_event_t evt;
+  app_espnow_event_t event;
   int ret;
 
   vTaskDelay(500 / portTICK_RATE_MS);
   ESP_LOGI(TAG, "Start listening for broadcast data");
 
-  while (xQueueReceive(app_espnow_queue, &evt, portMAX_DELAY) == pdTRUE) {
-    app_espnow_event_recv_cb_t *recv_cb = &evt.info;
+  while (xQueueReceive(app_espnow_queue, &event, portMAX_DELAY) == pdTRUE) {
     payload_sensor_t payload;
 
-    ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &payload);
-    free(recv_cb->data);
+    ret = app_espnow_data_parse(event.data, event.data_len, &payload);
+    free(event.data);
     ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
       if (count > 0x1FF) {
@@ -160,8 +157,8 @@ static void app_espnow_task(void *pvParameter) {
       DISPLAY_Update(&hdisplay);
 
       ESP_LOGI(TAG, "ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
-                payload.adc[0], payload.adc[1], MAC2STR(recv_cb->mac_addr),
-                recv_cb->data_len);
+                payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
+                event.data_len);
       // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
       // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
       // recv_cb->data_len);
@@ -170,7 +167,7 @@ static void app_espnow_task(void *pvParameter) {
 
     } else {
       ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
-                MAC2STR(recv_cb->mac_addr));
+                MAC2STR(event.mac_addr));
     }
   }
 }
