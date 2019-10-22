@@ -27,47 +27,35 @@ uint32_t count = 0;
 static uint8_t app_broadcast_mac[ESP_NOW_ETH_ALEN] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 //static uint16_t s_app_espnow_seq[APP_ESPNOW_DATA_MAX] = { 0, 0 };
 
-static esp_err_t app_event_handler(void *ctx, system_event_t *event)
-{
-    switch(event->event_id) {
-    case SYSTEM_EVENT_STA_START:
-        ESP_LOGI(TAG, "WiFi started");
-        break;
-    default:
-        break;
-    }
-    return ESP_OK;
-}
-
 /* WiFi should start before using ESPNOW */
-static void app_wifi_init(void)
+static esp_err_t app_wifi_init(void)
 {
     tcpip_adapter_init();
 
-    if (esp_event_loop_init(app_event_handler, NULL) != ESP_OK) {
+    if (esp_event_loop_init(NULL, NULL) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_event_loop_init");
-      abort();
+      return ESP_FAIL;
     }
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     if (esp_wifi_init(&cfg) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_init");
-      abort();
+      return ESP_FAIL;
     }
 
     if (esp_wifi_set_storage(WIFI_STORAGE_RAM) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_set_storage");
-      abort();
+      return ESP_FAIL;
     }
 
     if (esp_wifi_set_mode(ESPNOW_WIFI_MODE) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_set_mode");
-      abort();
+      return ESP_FAIL;
     }
 
     if (esp_wifi_start() != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_start");
-      abort();
+      return ESP_FAIL;
     }
 
     /* In order to simplify example, channel is set after WiFi started.
@@ -76,8 +64,10 @@ static void app_wifi_init(void)
      */
     if (esp_wifi_set_channel(CONFIG_ESPNOW_CHANNEL, 0) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_set_channel");
-      abort();
+      return ESP_FAIL;
     }
+
+    return ESP_OK;
 }
 
 /* Prepare ESPNOW data to be sent. */
@@ -85,7 +75,7 @@ void app_espnow_data_prepare(app_espnow_send_param_t *send_param)
 {
     payload_sensor_t *buf = (payload_sensor_t *)send_param->buffer;
     buf->crc = 0;
-    buf->adc[0] = count++;
+    buf->adc[0] = ++count;
     if (count > 1024) {
       count = 1;
     }
@@ -98,13 +88,13 @@ static esp_err_t app_espnow_init(void)
     /* Initialize ESPNOW and register sending and receiving callback function. */
     if (esp_now_init() != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_now_init");
-      abort();
+      return ESP_FAIL;
     }
 
     /* Set primary master key. */
     if (esp_now_set_pmk((uint8_t *)CONFIG_ESPNOW_PMK) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_now_set_pmk");
-      abort();
+      return ESP_FAIL;
     }
 
     /* Add broadcast peer information to peer list. */
@@ -121,14 +111,14 @@ static esp_err_t app_espnow_init(void)
     memcpy(peer->peer_addr, app_broadcast_mac, ESP_NOW_ETH_ALEN);
     if (esp_now_add_peer(peer) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_now_add_peer");
-      abort();
+      return ESP_FAIL;
     }
     free(peer);
 
     return ESP_OK;
 }
 
-void app_transmit() {
+static esp_err_t app_transmit() {
 /* Initialize sending parameters. */
     app_espnow_send_param_t *send_param;
     send_param = malloc(sizeof(app_espnow_send_param_t));
@@ -136,6 +126,7 @@ void app_transmit() {
     if (send_param == NULL) {
         ESP_LOGE(TAG, "Malloc send parameter fail");
         esp_now_deinit();
+        return ESP_FAIL;
     } else {
         send_param->unicast = false;
         send_param->broadcast = true;
@@ -149,6 +140,7 @@ void app_transmit() {
             ESP_LOGE(TAG, "Malloc send buffer fail");
             free(send_param);
             esp_now_deinit();
+            return ESP_FAIL;
         } else {
             memcpy(send_param->dest_mac, app_broadcast_mac, ESP_NOW_ETH_ALEN);
             app_espnow_data_prepare(send_param);
@@ -156,12 +148,14 @@ void app_transmit() {
             /* Start sending broadcast ESPNOW data. */
             if (esp_now_send(send_param->dest_mac, send_param->buffer, send_param->len) != ESP_OK) {
                 ESP_LOGE(TAG, "Send error");
-                //app_espnow_deinit(send_param);
+                return ESP_FAIL;
             } else  {
               ESP_LOGI(TAG, "Sent");
+              return ESP_OK;
             }
         }
     }
+    return ESP_FAIL;
 }
 
 void app_main()
@@ -169,11 +163,15 @@ void app_main()
     // Initialize NVS
     if (nvs_flash_init() != ESP_OK) {
       ESP_LOGE(TAG, "Failed: nvs_flash_init");
-      abort();
+      esp_restart();
     }
 
-    app_wifi_init();
-    app_espnow_init();
+    if (app_wifi_init() != ESP_OK) {
+      esp_restart();
+    }
+    if (app_espnow_init() != ESP_OK) {
+      esp_restart();
+    }
 
     app_transmit();
 
@@ -185,6 +183,8 @@ void app_main()
     // Just for dev work as I need to flash with Arduino IDE after sleep :(
     while (1) {
       vTaskDelay(5000 / portTICK_RATE_MS);
-      app_transmit();
+      if (app_transmit() != ESP_OK) {
+          esp_restart();
+      }
     }
 }
