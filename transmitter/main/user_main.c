@@ -72,12 +72,6 @@ static esp_err_t app_espnow_init(void)
       return ESP_FAIL;
     }
 
-    // /* Set primary master key. */
-    // if (esp_now_set_pmk((uint8_t *)CONFIG_ESPNOW_PMK) != ESP_OK) {
-    //   ESP_LOGE(TAG, "Failed: esp_now_set_pmk");
-    //   return ESP_FAIL;
-    // }
-
     /* Add broadcast peer information to peer list. */
     esp_now_peer_info_t *peer = malloc(sizeof(esp_now_peer_info_t));
     if (peer == NULL) {
@@ -129,12 +123,6 @@ static esp_err_t app_transmit() {
 
 void app_main()
 {
-    // // Initialize NVS
-    // if (nvs_flash_init() != ESP_OK) {
-    //   ESP_LOGE(TAG, "Failed: nvs_flash_init");
-    //   esp_restart();
-    // }
-
     if (app_wifi_init() != ESP_OK) {
       esp_restart();
     }
