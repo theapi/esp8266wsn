@@ -94,7 +94,6 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
     return;
   }
 
-  evt.id = APP_ESPNOW_RECV_CB;
   memcpy(recv_cb->mac_addr, mac_addr, ESP_NOW_ETH_ALEN);
   recv_cb->data = malloc(len);
   if (recv_cb->data == NULL) {
@@ -147,38 +146,30 @@ static void app_espnow_task(void *pvParameter) {
   ESP_LOGI(TAG, "Start listening for broadcast data");
 
   while (xQueueReceive(app_espnow_queue, &evt, portMAX_DELAY) == pdTRUE) {
-    switch (evt.id) {
-      case APP_ESPNOW_RECV_CB: {
-        app_espnow_event_recv_cb_t *recv_cb = &evt.info.recv_cb;
-        payload_sensor_t payload;
+    app_espnow_event_recv_cb_t *recv_cb = &evt.info.recv_cb;
+    payload_sensor_t payload;
 
-        ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &payload);
-        free(recv_cb->data);
-        if (ret == ESP_OK) {
-          if (count > 0x1FF) {
-            count = 0;
-          }
-          // hdisplay.pixels = ++count;
-          hdisplay.pixels = payload.adc[0];
-          DISPLAY_Update(&hdisplay);
-
-          ESP_LOGI(TAG, "ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
-                   payload.adc[0], payload.adc[1], MAC2STR(recv_cb->mac_addr),
-                   recv_cb->data_len);
-          // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
-          // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
-          // recv_cb->data_len);
-          // // Write data back to the UART
-          // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
-        } else {
-          ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
-                   MAC2STR(recv_cb->mac_addr));
-        }
-        break;
+    ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &payload);
+    free(recv_cb->data);
+    if (ret == ESP_OK) {
+      if (count > 0x1FF) {
+        count = 0;
       }
-      default:
-        ESP_LOGE(TAG, "Callback type error: %d", evt.id);
-        break;
+      // hdisplay.pixels = ++count;
+      hdisplay.pixels = payload.adc[0];
+      DISPLAY_Update(&hdisplay);
+
+      ESP_LOGI(TAG, "ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+                payload.adc[0], payload.adc[1], MAC2STR(recv_cb->mac_addr),
+                recv_cb->data_len);
+      // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
+      // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
+      // recv_cb->data_len);
+      // // Write data back to the UART
+      // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
+    } else {
+      ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
+                MAC2STR(recv_cb->mac_addr));
     }
   }
 }
