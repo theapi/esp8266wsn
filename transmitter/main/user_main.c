@@ -25,7 +25,8 @@ static const char *TAG = "transmitter";
 uint32_t count = 0;
 
 static uint8_t app_broadcast_mac[ESP_NOW_ETH_ALEN] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-//static uint16_t s_app_espnow_seq[APP_ESPNOW_DATA_MAX] = { 0, 0 };
+/* Global send buffer. */
+uint8_t buffer[sizeof(payload_sensor_t)] = {0};
 
 /* WiFi should start before using ESPNOW */
 static esp_err_t app_wifi_init(void)
@@ -70,19 +71,6 @@ static esp_err_t app_wifi_init(void)
     return ESP_OK;
 }
 
-/* Prepare ESPNOW data to be sent. */
-void app_espnow_data_prepare(app_espnow_send_param_t *send_param)
-{
-    payload_sensor_t *buf = (payload_sensor_t *)send_param->buffer;
-    buf->crc = 0;
-    buf->adc[0] = ++count;
-    if (count > 1024) {
-      count = 1;
-    }
-    buf->adc[1] = 3300; // will be the battery reading
-    buf->crc = crc16_le(UINT16_MAX, (uint8_t const *)buf, send_param->len);
-}
-
 static esp_err_t app_espnow_init(void)
 {
     /* Initialize ESPNOW and register sending and receiving callback function. */
@@ -118,44 +106,32 @@ static esp_err_t app_espnow_init(void)
     return ESP_OK;
 }
 
-static esp_err_t app_transmit() {
-/* Initialize sending parameters. */
-    app_espnow_send_param_t *send_param;
-    send_param = malloc(sizeof(app_espnow_send_param_t));
-    memset(send_param, 0, sizeof(app_espnow_send_param_t));
-    if (send_param == NULL) {
-        ESP_LOGE(TAG, "Malloc send parameter fail");
-        esp_now_deinit();
-        return ESP_FAIL;
-    } else {
-        send_param->unicast = false;
-        send_param->broadcast = true;
-        send_param->state = 0;
-        send_param->magic = esp_random();
-        send_param->count = CONFIG_ESPNOW_SEND_COUNT;
-        send_param->delay = CONFIG_ESPNOW_SEND_DELAY;
-        send_param->len = CONFIG_ESPNOW_SEND_LEN;
-        send_param->buffer = malloc(CONFIG_ESPNOW_SEND_LEN);
-        if (send_param->buffer == NULL) {
-            ESP_LOGE(TAG, "Malloc send buffer fail");
-            free(send_param);
-            esp_now_deinit();
-            return ESP_FAIL;
-        } else {
-            memcpy(send_param->dest_mac, app_broadcast_mac, ESP_NOW_ETH_ALEN);
-            app_espnow_data_prepare(send_param);
-
-            /* Start sending broadcast ESPNOW data. */
-            if (esp_now_send(send_param->dest_mac, send_param->buffer, send_param->len) != ESP_OK) {
-                ESP_LOGE(TAG, "Send error");
-                return ESP_FAIL;
-            } else  {
-              ESP_LOGI(TAG, "Sent");
-              return ESP_OK;
-            }
-        }
+/* Prepare ESPNOW data to be sent. */
+void app_espnow_data_prepare()
+{
+    /* Map the buffer to the struct for ease of manipulation */
+    payload_sensor_t *buf = (payload_sensor_t *)buffer;
+    buf->crc = 0;
+    buf->adc[0] = ++count;
+    if (count > 1024) {
+      count = 1;
     }
+    buf->adc[1] = 3300; // will be the battery reading
+    buf->crc = crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(payload_sensor_t));
+}
+
+static esp_err_t app_transmit() {
+  app_espnow_data_prepare();
+
+  /* Start sending broadcast ESPNOW data. */
+  if (esp_now_send(app_broadcast_mac, buffer, sizeof(payload_sensor_t)) != ESP_OK) {
+    ESP_LOGE(TAG, "Send error");
     return ESP_FAIL;
+  } else  {
+    ESP_LOGI(TAG, "Sent");
+    return ESP_OK;
+  }
+  return ESP_FAIL;
 }
 
 void app_main()
