@@ -87,7 +87,7 @@ static esp_err_t app_wifi_init(void)
 static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
                                int len) {
   app_espnow_event_t evt;
-  app_espnow_event_recv_cb_t *recv_cb = &evt.info.recv_cb;
+  app_espnow_event_recv_cb_t *recv_cb = &evt.info;
 
   if (mac_addr == NULL || data == NULL || len <= 0) {
     ESP_LOGE(TAG, "Receive cb arg error");
@@ -113,6 +113,7 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
 int app_espnow_data_parse(uint8_t *data, uint16_t data_len,
                           payload_sensor_t *payload) {
   int i = 0;
+  /* Map the data to the struct for ease of manipulation */
   payload_sensor_t *buf = (payload_sensor_t *)data;
   uint16_t crc, crc_cal = 0;
 
@@ -123,13 +124,11 @@ int app_espnow_data_parse(uint8_t *data, uint16_t data_len,
 
   ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
   ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
-  for (i = 0; i < PAYLOAD_ADC_NUM; i++) {
-    payload->adc[i] = buf->adc[i];
-  }
+  memcpy(payload->adc, buf->adc, sizeof(payload->adc));
 
   crc = buf->crc;
   buf->crc = 0;
-  crc_cal = crc16_le(UINT16_MAX, (uint8_t const *)data, data_len);
+  crc_cal = crc16_le(UINT16_MAX, (uint8_t const *)buf, data_len);
 
   if (crc_cal == crc) {
     return ESP_OK;
@@ -146,11 +145,12 @@ static void app_espnow_task(void *pvParameter) {
   ESP_LOGI(TAG, "Start listening for broadcast data");
 
   while (xQueueReceive(app_espnow_queue, &evt, portMAX_DELAY) == pdTRUE) {
-    app_espnow_event_recv_cb_t *recv_cb = &evt.info.recv_cb;
+    app_espnow_event_recv_cb_t *recv_cb = &evt.info;
     payload_sensor_t payload;
 
     ret = app_espnow_data_parse(recv_cb->data, recv_cb->data_len, &payload);
     free(recv_cb->data);
+    ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
       if (count > 0x1FF) {
         count = 0;
@@ -167,6 +167,7 @@ static void app_espnow_task(void *pvParameter) {
       // recv_cb->data_len);
       // // Write data back to the UART
       // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
+
     } else {
       ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
                 MAC2STR(recv_cb->mac_addr));
