@@ -81,7 +81,7 @@ CONFIG_ESPTOOLPY_ENABLE_SAVELOG=
 #
 # Receiver Configuration
 #
-CONFIG_ESPNOW_CHANNEL=1
+CONFIG_ESPNOW_CHANNEL=2
 
 #
 # Partition Table

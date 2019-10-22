@@ -59,7 +59,7 @@ static esp_err_t app_wifi_init(void)
       return ESP_FAIL;
     }
 
-    if (esp_wifi_set_mode(ESPNOW_WIFI_MODE) != ESP_OK) {
+    if (esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK) {
       ESP_LOGE(TAG, "Failed: esp_wifi_set_mode");
       return ESP_FAIL;
     }
