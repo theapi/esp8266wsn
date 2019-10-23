@@ -11,11 +11,11 @@
 #include "freertos/timers.h"
 
 #include "esp8266/spi_struct.h"
-#include "esp_event_loop.h"
+//#include "esp_event_loop.h"
 #include "esp_log.h"
 #include "esp_now.h"
 #include "esp_system.h"
-#include "esp_wifi.h"
+//#include "esp_wifi.h"
 
 #include "driver/adc.h"
 #include "driver/gpio.h"
@@ -28,6 +28,7 @@
 #include "app_main.h"
 #include "display.h"
 #include "payload.h"
+#include "network.h"
 
 static const char *TAG = "receiver";
 
@@ -37,49 +38,6 @@ char uart_buffer[UART_BUF_SIZE];
 static xQueueHandle app_espnow_queue;
 uint32_t count = 0;
 
-/* WiFi should start before using ESPNOW */
-static esp_err_t app_wifi_init(void)
-{
-    tcpip_adapter_init();
-
-    if (esp_event_loop_init(NULL, NULL) != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: esp_event_loop_init");
-      return ESP_FAIL;
-    }
-
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    cfg.nvs_enable = 0;
-    if (esp_wifi_init(&cfg) != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: esp_wifi_init");
-      return ESP_FAIL;
-    }
-
-    if (esp_wifi_set_storage(WIFI_STORAGE_RAM) != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: esp_wifi_set_storage");
-      return ESP_FAIL;
-    }
-
-    if (esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: esp_wifi_set_mode");
-      return ESP_FAIL;
-    }
-
-    if (esp_wifi_start() != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: esp_wifi_start");
-      return ESP_FAIL;
-    }
-
-    /* In order to simplify example, channel is set after WiFi started.
-     * This is not necessary in real application if the two devices have
-     * been already on the same channel.
-     */
-    if (esp_wifi_set_channel(CONFIG_ESPNOW_CHANNEL, 0) != ESP_OK) {
-      ESP_LOGE(TAG, "Failed: esp_wifi_set_channel");
-      return ESP_FAIL;
-    }
-
-    return ESP_OK;
-}
 
 /* ESPNOW sending or receiving callback function is called in WiFi task.
  * Users should not do lengthy operations from this task. Instead, post
@@ -94,16 +52,10 @@ static void app_espnow_recv_cb(const uint8_t *mac_addr, const uint8_t *data,
   }
 
   memcpy(event.mac_addr, mac_addr, ESP_NOW_ETH_ALEN);
-  // event.data = malloc(len);
-  // if (event.data == NULL) {
-  //   ESP_LOGE(TAG, "Malloc receive data fail");
-  //   esp_restart();
-  // }
   memcpy(event.data, data, len);
   event.data_len = len;
   if (xQueueSend(app_espnow_queue, &event, portMAX_DELAY) != pdTRUE) {
     ESP_LOGW(TAG, "Receive queue fail");
-    //free(event.data);
     esp_restart();
   }
 }
@@ -174,30 +126,6 @@ static void app_espnow_task(void *pvParameter) {
   }
 }
 
-static esp_err_t app_espnow_init(void) {
-  app_espnow_queue =
-      xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(app_espnow_event_t));
-  if (app_espnow_queue == NULL) {
-    ESP_LOGE(TAG, "Create mutex fail");
-    return ESP_FAIL;
-  }
-
-  /* Initialize ESPNOW and register receiving callback function. */
-  if (esp_now_init() != ESP_OK) {
-    ESP_LOGE(TAG, "Failed: esp_now_init");
-    return ESP_FAIL;
-  }
-
-  if (esp_now_register_recv_cb(app_espnow_recv_cb) != ESP_OK) {
-    ESP_LOGE(TAG, "Failed: esp_now_register_send_cb");
-    return ESP_FAIL;
-  }
-
-  xTaskCreate(app_espnow_task, "app_espnow_task", 2048, NULL, 4, NULL);
-
-  return ESP_OK;
-}
-
 static void adc_task(void *data) {
   uint16_t val;
 
@@ -241,12 +169,23 @@ void app_main(void) {
   // uart_param_config(UART_NUM_0, &uart_config);
   // uart_driver_install(UART_NUM_0, UART_BUF_SIZE * 2, 0, 0, NULL);
 
-  if (app_wifi_init() != ESP_OK) {
+  if (NETWORK_Init() != ESP_OK) {
     esp_restart();
   }
-  if (app_espnow_init() != ESP_OK) {
+
+  if (esp_now_register_recv_cb(app_espnow_recv_cb) != ESP_OK) {
+    ESP_LOGE(TAG, "Failed: esp_now_register_send_cb");
     esp_restart();
   }
+
+  app_espnow_queue =
+      xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(app_espnow_event_t));
+  if (app_espnow_queue == NULL) {
+    ESP_LOGE(TAG, "Create mutex fail");
+    esp_restart();
+  }
+
+  xTaskCreate(app_espnow_task, "app_espnow_task", 2048, NULL, 4, NULL);
 
   xTaskCreate(adc_task, "adc_task", 1024, NULL, 5, NULL);
   // xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task",
