@@ -16,7 +16,8 @@
     "display.h": "c",
     "spi_struct.h": "c",
     "gpio.h": "c",
-    "network.h": "c"
+    "network.h": "c",
+    "adc.h": "c"
   },
   "C_Cpp.clang_format_fallbackStyle": "Google"
 }

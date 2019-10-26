@@ -17,7 +17,6 @@
 
 #include "crc.h"
 #include "display.h"
-#include "app_main.h"
 
 static const char *TAG = "network";
 static xQueueHandle recv_queue;
