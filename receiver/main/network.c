@@ -1,5 +1,13 @@
+#include <stdlib.h>
+#include <string.h>
 
 #include "network.h"
+
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
+#include "freertos/task.h"
+#include "freertos/timers.h"
+
 
 #include "esp_event_loop.h"
 #include "esp_log.h"
@@ -7,9 +15,14 @@
 #include "esp_system.h"
 #include "esp_wifi.h"
 
+#include "crc.h"
+#include "display.h"
 #include "app_main.h"
 
 static const char *TAG = "network";
+static xQueueHandle recv_queue;
+static uint32_t count = 0;
+
 
 /* WiFi should start before using ESPNOW */
 static esp_err_t wifi_init(void)
@@ -65,6 +78,93 @@ static esp_err_t espnow_init(void) {
   return ESP_OK;
 }
 
+
+/* Parse received ESPNOW data. */
+static int data_parse(uint8_t *data, uint16_t data_len,
+                          payload_sensor_t *payload) {
+  /* Map the data to the struct for ease of manipulation */
+  payload_sensor_t *buf = (payload_sensor_t *)data;
+  uint16_t crc, crc_cal = 0;
+
+  if (data_len < sizeof(payload_sensor_t)) {
+    ESP_LOGE(TAG, "Receive ESPNOW data too short, len:%d", data_len);
+    return ESP_FAIL;
+  }
+
+  payload->device_id = buf->device_id;
+  ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
+  ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
+  memcpy(payload->adc, buf->adc, sizeof(payload->adc));
+
+  crc = buf->crc;
+  buf->crc = 0;
+  crc_cal = crc16_le(UINT16_MAX, (uint8_t const *)buf, data_len);
+
+  if (crc_cal == crc) {
+    return ESP_OK;
+  }
+
+  return ESP_FAIL;
+}
+
+static void recv_task(void *pvParameter) {
+  app_espnow_event_t event;
+  int ret;
+
+  vTaskDelay(500 / portTICK_RATE_MS);
+  ESP_LOGI(TAG, "Start listening for broadcast data");
+
+  while (xQueueReceive(recv_queue, &event, portMAX_DELAY) == pdTRUE) {
+    payload_sensor_t payload;
+
+    ret = data_parse(event.data, event.data_len, &payload);
+    ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
+    if (ret == ESP_OK) {
+      if (count > 0x1FF) {
+        count = 0;
+      }
+      // hdisplay.pixels = ++count;
+      hdisplay.pixels = payload.adc[0];
+      DISPLAY_Update(&hdisplay);
+
+      ESP_LOGI(TAG, "Device: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+                payload.device_id,
+                payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
+                event.data_len);
+      // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
+      // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
+      // recv_cb->data_len);
+      // // Write data back to the UART
+      // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
+
+    } else {
+      ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
+                MAC2STR(event.mac_addr));
+    }
+  }
+}
+
+/* ESPNOW sending or receiving callback function is called in WiFi task.
+ * Users should not do lengthy operations from this task. Instead, post
+ * necessary data to a queue and handle it from a lower priority task. */
+static void recv_cb(const uint8_t *mac_addr, const uint8_t *data,
+                               int len) {
+  app_espnow_event_t event = {0};
+
+  if (mac_addr == NULL || data == NULL || len <= 0) {
+    ESP_LOGE(TAG, "Receive cb arg error");
+    return;
+  }
+
+  memcpy(event.mac_addr, mac_addr, ESP_NOW_ETH_ALEN);
+  memcpy(event.data, data, len);
+  event.data_len = len;
+  if (xQueueSend(recv_queue, &event, portMAX_DELAY) != pdTRUE) {
+    ESP_LOGW(TAG, "Receive queue fail");
+    esp_restart();
+  }
+}
+
 esp_err_t NETWORK_Init() {
   if (wifi_init() != ESP_OK) {
     return ESP_FAIL;
@@ -72,6 +172,19 @@ esp_err_t NETWORK_Init() {
   if (espnow_init() != ESP_OK) {
     return ESP_FAIL;
   }
+
+  if (esp_now_register_recv_cb(recv_cb) != ESP_OK) {
+    ESP_LOGE(TAG, "Failed: esp_now_register_send_cb");
+    esp_restart();
+  }
+
+  recv_queue = xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(app_espnow_event_t));
+  if (recv_queue == NULL) {
+    ESP_LOGE(TAG, "Create mutex fail");
+    esp_restart();
+  }
+
+  xTaskCreate(recv_task, "recv_task", 2048, NULL, 4, NULL);
 
   return ESP_OK;
 }
