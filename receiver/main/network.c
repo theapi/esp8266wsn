@@ -108,7 +108,7 @@ static int data_parse(uint8_t *data, uint16_t data_len,
 }
 
 static void recv_task(void *pvParameter) {
-  app_espnow_event_t event;
+  NETWORK_event_t event;
   int ret;
 
   vTaskDelay(500 / portTICK_RATE_MS);
@@ -149,7 +149,7 @@ static void recv_task(void *pvParameter) {
  * necessary data to a queue and handle it from a lower priority task. */
 static void recv_cb(const uint8_t *mac_addr, const uint8_t *data,
                                int len) {
-  app_espnow_event_t event = {0};
+  NETWORK_event_t event = {0};
 
   if (mac_addr == NULL || data == NULL || len <= 0) {
     ESP_LOGE(TAG, "Receive cb arg error");
@@ -178,7 +178,7 @@ esp_err_t NETWORK_Init() {
     esp_restart();
   }
 
-  recv_queue = xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(app_espnow_event_t));
+  recv_queue = xQueueCreate(ESPNOW_QUEUE_SIZE, sizeof(NETWORK_event_t));
   if (recv_queue == NULL) {
     ESP_LOGE(TAG, "Create mutex fail");
     esp_restart();

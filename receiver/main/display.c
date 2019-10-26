@@ -2,6 +2,7 @@
 #include "display.h"
 #include "driver/spi.h"
 #include "driver/gpio.h"
+#include "esp8266/spi_struct.h"
 
 DISPLAY_HandleTypeDef hdisplay;
 

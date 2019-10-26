@@ -16,7 +16,7 @@ typedef struct {
     //uint8_t *data;
     uint8_t data[sizeof(payload_sensor_t)];
     int data_len;
-} app_espnow_event_t;
+} NETWORK_event_t;
 
 /* Boilerplate wifi & espnow initialisation. */
 esp_err_t NETWORK_Init();

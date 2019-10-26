@@ -2,30 +2,12 @@
  * WSN Receiver
  */
 
-#include <stdlib.h>
-#include <string.h>
-
 #include "freertos/FreeRTOS.h"
-#include "freertos/semphr.h"
 #include "freertos/task.h"
-#include "freertos/timers.h"
-
-#include "esp8266/spi_struct.h"
-//#include "esp_event_loop.h"
-#include "esp_log.h"
-#include "esp_now.h"
-#include "esp_system.h"
-//#include "esp_wifi.h"
 
 #include "driver/adc.h"
-#include "driver/gpio.h"
-#include "driver/spi.h"
 #include "driver/uart.h"
 
-#include "crc.h"
-#include "tcpip_adapter.h"
-
-#include "app_main.h"
 #include "display.h"
 #include "payload.h"
 #include "network.h"
@@ -35,9 +17,6 @@ static const char *TAG = "receiver";
 #define UART_BUF_SIZE (1024)
 
 char uart_buffer[UART_BUF_SIZE];
-
-
-
 
 static void adc_task(void *data) {
   uint16_t val;
@@ -85,8 +64,6 @@ void app_main(void) {
   if (NETWORK_Init() != ESP_OK) {
     esp_restart();
   }
-
-
 
   xTaskCreate(adc_task, "adc_task", 1024, NULL, 5, NULL);
   // xTaskCreate(spi_master_write_slave_task, "spi_master_write_slave_task",
