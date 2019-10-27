@@ -3,22 +3,21 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+#include "esp_system.h"
 #include "driver/adc.h"
-#include "esp_log.h"
+//#include "esp_log.h"
 
 #include "display.h"
 
-static const char *TAG = "adc";
-
-static void adc_task(void *data) {
+static void light_task(void *data) {
   uint16_t val;
 
   while (1) {
     if (ESP_OK == adc_read(&val)) {
       if (val > 120) {
-        DISPLAY_On(&hdisplay);
+        Display_on(&hdisplay);
       } else if (val < 100) {
-        //DISPLAY_Off(&hdisplay);
+        Display_off(&hdisplay);
       }
       // ESP_LOGI(TAG, "adc read: %d", val);
     }
@@ -26,14 +25,23 @@ static void adc_task(void *data) {
   }
 }
 
-void LIGHT_Init() {
+esp_err_t Light_init() {
   adc_config_t adc_config;
   adc_config.mode = ADC_READ_TOUT_MODE;
   adc_config.clk_div = 8;  // 80MHz/clk_div = 10MHz
   if (adc_init(&adc_config) != ESP_OK) {
-    ESP_LOGE(TAG, "Failed: adc_init");
-    esp_restart();
+    return ESP_FAIL;
   }
 
-  xTaskCreate(adc_task, "adc_task", 1024, NULL, 5, NULL);
+  return ESP_OK;
+}
+
+esp_err_t Light_start() {
+  BaseType_t xReturned;
+  xReturned = xTaskCreate(light_task, "light_task", 1024, NULL, 5, NULL);
+  if( xReturned != pdPASS ) {
+    return ESP_FAIL;
+  }
+
+  return ESP_OK;
 }

@@ -4,7 +4,10 @@
 extern "C" {
 #endif
 
-void LIGHT_Init();
+#include "esp_system.h"
+
+esp_err_t Light_init();
+esp_err_t Light_start();
 
 #ifdef __cplusplus
 }

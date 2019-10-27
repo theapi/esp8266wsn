@@ -19,7 +19,8 @@ typedef struct {
 } NETWORK_event_t;
 
 /* Boilerplate wifi & espnow initialisation. */
-esp_err_t NETWORK_Init();
+esp_err_t Network_init();
+esp_err_t Network_start();
 
 #ifdef __cplusplus
 }

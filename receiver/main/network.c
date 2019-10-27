@@ -124,7 +124,7 @@ static void recv_task(void *pvParameter) {
       }
       // hdisplay.pixels = ++count;
       hdisplay.pixels = payload.adc[0];
-      DISPLAY_Update(&hdisplay);
+      Display_update(&hdisplay);
 
       ESP_LOGI(TAG, "Device: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
                 payload.device_id,
@@ -164,7 +164,7 @@ static void recv_cb(const uint8_t *mac_addr, const uint8_t *data,
   }
 }
 
-esp_err_t NETWORK_Init() {
+esp_err_t Network_init() {
   if (wifi_init() != ESP_OK) {
     return ESP_FAIL;
   }
@@ -183,7 +183,15 @@ esp_err_t NETWORK_Init() {
     esp_restart();
   }
 
-  xTaskCreate(recv_task, "recv_task", 2048, NULL, 4, NULL);
+  return ESP_OK;
+}
+
+esp_err_t Network_start() {
+  BaseType_t xReturned;
+  xReturned = xTaskCreate(recv_task, "recv_task", 2048, NULL, 4, NULL);
+  if( xReturned != pdPASS ) {
+    return ESP_FAIL;
+  }
 
   return ESP_OK;
 }
