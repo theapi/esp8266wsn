@@ -2,10 +2,11 @@
 #include "display.h"
 #include "driver/spi.h"
 #include "driver/gpio.h"
+#include "esp8266/spi_struct.h"
 
 DISPLAY_HandleTypeDef hdisplay;
 
-void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay) {
+void Display_update(DISPLAY_HandleTypeDef *hdisplay) {
     // Write 8-bit data to the shift register.
     uint32_t buf = hdisplay->pixels << 24;
     spi_trans_t trans = {0};
@@ -27,19 +28,19 @@ void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay) {
     spi_trans(HSPI_HOST, trans);
 }
 
-void DISPLAY_On(DISPLAY_HandleTypeDef *hdisplay) {
+void Display_on(DISPLAY_HandleTypeDef *hdisplay) {
     DISPLAY_StateTypeDef tmp = hdisplay->state;
     hdisplay->state = DISPLAY_STATE_ON;
     if (tmp == DISPLAY_STATE_OFF) {
-        DISPLAY_Update(hdisplay);
+        Display_update(hdisplay);
     }
 }
 
-void DISPLAY_Off(DISPLAY_HandleTypeDef *hdisplay) {
+void Display_off(DISPLAY_HandleTypeDef *hdisplay) {
     DISPLAY_StateTypeDef tmp = hdisplay->state;
     hdisplay->state = DISPLAY_STATE_OFF;
     if (tmp == DISPLAY_STATE_ON) {
-        DISPLAY_Update(hdisplay);
+        Display_update(hdisplay);
     }
 }
 
@@ -70,10 +71,9 @@ static void setupSPI() {
     // Cancel MISO
     spi_config.interface.miso_en = 0;
     spi_init(HSPI_HOST, &spi_config);
-
 }
 
-void DISPLAY_Init() {
+void Display_init() {
     setupGPIO();
     setupSPI();
 }

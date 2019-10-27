@@ -26,10 +26,10 @@ typedef struct __DISPLAY_HandleTypeDef {
 
 extern DISPLAY_HandleTypeDef hdisplay;
 
-void DISPLAY_Init();
-void DISPLAY_Update(DISPLAY_HandleTypeDef *hdisplay);
-void DISPLAY_On(DISPLAY_HandleTypeDef *hdisplay);
-void DISPLAY_Off(DISPLAY_HandleTypeDef *hdisplay);
+void Display_init();
+void Display_update(DISPLAY_HandleTypeDef *hdisplay);
+void Display_on(DISPLAY_HandleTypeDef *hdisplay);
+void Display_off(DISPLAY_HandleTypeDef *hdisplay);
 
 #ifdef __cplusplus
 }

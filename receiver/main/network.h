@@ -1,10 +1,11 @@
-
+#ifndef NETWORK_H_
+#define NETWORK_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "esp_now.h"
-
-#ifndef ESPNOW_APP_H
-#define ESPNOW_APP_H
-
+#include "esp_system.h"
 #include "payload.h"
 
 #define ESPNOW_QUEUE_SIZE 6
@@ -15,6 +16,13 @@ typedef struct {
     //uint8_t *data;
     uint8_t data[sizeof(payload_sensor_t)];
     int data_len;
-} app_espnow_event_t;
+} NETWORK_event_t;
 
+/* Boilerplate wifi & espnow initialisation. */
+esp_err_t Network_init();
+esp_err_t Network_start();
+
+#ifdef __cplusplus
+}
 #endif
+#endif /* NETWORK_H_ */
