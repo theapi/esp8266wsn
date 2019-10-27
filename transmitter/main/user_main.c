@@ -87,11 +87,13 @@ static esp_err_t app_espnow_init(void) {
   peer->ifidx = ESP_IF_WIFI_STA;
   peer->encrypt = false;
   memcpy(peer->peer_addr, app_broadcast_mac, ESP_NOW_ETH_ALEN);
-  if (esp_now_add_peer(peer) != ESP_OK) {
-    ESP_LOGE(TAG, "Failed: esp_now_add_peer");
+
+  esp_err_t ret = esp_now_add_peer(peer);
+  free(peer);
+  if (ret != ESP_OK) {
+    //ESP_LOGE(TAG, "Failed: esp_now_add_peer");
     return ESP_FAIL;
   }
-  free(peer);
 
   return ESP_OK;
 }
@@ -176,8 +178,8 @@ void app_main() {
   }
 
   setupGPIO();
-  if (app_espnow_init() != ESP_OK) {
-    readings_init();
+  if (readings_init() != ESP_OK) {
+    esp_restart();
   }
 
   app_transmit();
