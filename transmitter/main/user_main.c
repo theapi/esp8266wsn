@@ -12,6 +12,11 @@
 #include "payload.h"
 #include "tcpip_adapter.h"
 
+#include "driver/adc.h"
+#include "driver/gpio.h"
+
+#define PIN_MULTIPLEX 4
+
 static const char *TAG = "transmitter";
 
 static uint8_t app_broadcast_mac[ESP_NOW_ETH_ALEN] = {0xFF, 0xFF, 0xFF,
@@ -91,16 +96,54 @@ static esp_err_t app_espnow_init(void) {
   return ESP_OK;
 }
 
+static void setupGPIO() {
+    gpio_config_t io_conf;
+    //disable interrupt
+    io_conf.intr_type = GPIO_INTR_DISABLE;
+    //set as output mode
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    //bit mask of the pins that you want to set,e.g.GPIO15/16
+    io_conf.pin_bit_mask = (1ULL << PIN_MULTIPLEX);
+    //disable pull-down mode
+    io_conf.pull_down_en = 0;
+    //disable pull-up mode
+    io_conf.pull_up_en = 0;
+    //configure GPIO with the given settings
+    gpio_config(&io_conf);
+}
+
+static void readings_get(uint16_t adc[2]) {
+  gpio_set_level(PIN_MULTIPLEX, 0);
+  adc_read(&adc[0]);
+  // change multiplexer
+  gpio_set_level(PIN_MULTIPLEX, 1);
+  adc_read(&adc[1]);
+  gpio_set_level(PIN_MULTIPLEX, 0);
+}
+
+esp_err_t readings_init() {
+  adc_config_t adc_config;
+  adc_config.mode = ADC_READ_TOUT_MODE;
+  adc_config.clk_div = 8;  // 80MHz/clk_div = 10MHz
+  if (adc_init(&adc_config) != ESP_OK) {
+    return ESP_FAIL;
+  }
+
+  return ESP_OK;
+}
+
 /* Prepare ESPNOW data to be sent. */
 void app_espnow_data_prepare() {
   static uint8_t msg_id = 0;
+
   /* Map the buffer to the struct for ease of manipulation */
   PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)buffer;
   buf->device_id = 250;
   buf->message_id = ++msg_id;
   buf->crc = 0;
-  buf->adc[0] = 3300;   // will be battery reading
-  buf->adc[1] = 1234;  // will be the soil reading
+  //buf->adc[0] = 3300;   // will be battery reading
+  //buf->adc[1] = 1234;  // will be the soil reading
+  readings_get(buf->adc);
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
   ESP_LOGI(TAG, "Device: %d, msg_id: %d, ADC_1: %d, ADC_2: %d",
@@ -130,6 +173,11 @@ void app_main() {
   }
   if (app_espnow_init() != ESP_OK) {
     esp_restart();
+  }
+
+  setupGPIO();
+  if (app_espnow_init() != ESP_OK) {
+    readings_init();
   }
 
   app_transmit();

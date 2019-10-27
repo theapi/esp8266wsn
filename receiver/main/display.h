@@ -6,7 +6,7 @@ extern "C" {
 
 #include "esp_system.h"
 
-#define DISPLAY_PIN_BLUE 4
+#define DISPLAY_PIN_BLUE 4 // D2 on NodeMCU
 
 /**
   * @brief  DISPLAY State structures definition
