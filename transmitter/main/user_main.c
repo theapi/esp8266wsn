@@ -14,12 +14,11 @@
 
 static const char *TAG = "transmitter";
 
-uint32_t count = 0;
-
 static uint8_t app_broadcast_mac[ESP_NOW_ETH_ALEN] = {0xFF, 0xFF, 0xFF,
                                                       0xFF, 0xFF, 0xFF};
 /* Global send buffer. */
-uint8_t buffer[sizeof(payload_sensor_t)] = {0};
+uint8_t buffer[sizeof(PAYLOAD_sensor_t)] = {0};
+
 
 /* WiFi should start before using ESPNOW */
 static esp_err_t app_wifi_init(void) {
@@ -94,24 +93,27 @@ static esp_err_t app_espnow_init(void) {
 
 /* Prepare ESPNOW data to be sent. */
 void app_espnow_data_prepare() {
+  static uint8_t msg_id = 0;
   /* Map the buffer to the struct for ease of manipulation */
-  payload_sensor_t *buf = (payload_sensor_t *)buffer;
-  buf->device_id = 1234;
+  PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)buffer;
+  buf->device_id = 250;
+  buf->message_id = ++msg_id;
   buf->crc = 0;
-  buf->adc[0] = ++count;
-  if (count > 1024) {
-    count = 1;
-  }
-  buf->adc[1] = 3300;  // will be the battery reading
+  buf->adc[0] = 3300;   // will be battery reading
+  buf->adc[1] = 1234;  // will be the soil reading
   buf->crc =
-      crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(payload_sensor_t));
+      crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
+  ESP_LOGI(TAG, "Device: %d, msg_id: %d, ADC_1: %d, ADC_2: %d",
+                buf->device_id,
+                buf->message_id,
+                buf->adc[0], buf->adc[1]);
 }
 
 static esp_err_t app_transmit() {
   app_espnow_data_prepare();
 
   /* Start sending broadcast ESPNOW data. */
-  if (esp_now_send(app_broadcast_mac, buffer, sizeof(payload_sensor_t)) !=
+  if (esp_now_send(app_broadcast_mac, buffer, sizeof(PAYLOAD_sensor_t)) !=
       ESP_OK) {
     ESP_LOGE(TAG, "Send error");
     return ESP_FAIL;

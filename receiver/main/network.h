@@ -14,7 +14,7 @@ extern "C" {
 typedef struct {
     uint8_t mac_addr[ESP_NOW_ETH_ALEN];
     //uint8_t *data;
-    uint8_t data[sizeof(payload_sensor_t)];
+    uint8_t data[sizeof(PAYLOAD_sensor_t)];
     int data_len;
 } NETWORK_event_t;
 

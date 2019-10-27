@@ -8,7 +8,9 @@
     "*.test": "php",
     "*.php": "php",
     "ets_sys.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "chrono": "c",
+    "algorithm": "c"
   },
   "C_Cpp.clang_format_fallbackStyle": "Google"
 }

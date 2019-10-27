@@ -20,8 +20,6 @@
 
 static const char *TAG = "network";
 static xQueueHandle recv_queue;
-static uint32_t count = 0;
-
 
 /* WiFi should start before using ESPNOW */
 static esp_err_t wifi_init(void)
@@ -80,17 +78,18 @@ static esp_err_t espnow_init(void) {
 
 /* Parse received ESPNOW data. */
 static int data_parse(uint8_t *data, uint16_t data_len,
-                          payload_sensor_t *payload) {
+                          PAYLOAD_sensor_t *payload) {
   /* Map the data to the struct for ease of manipulation */
-  payload_sensor_t *buf = (payload_sensor_t *)data;
+  PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)data;
   uint16_t crc, crc_cal = 0;
 
-  if (data_len < sizeof(payload_sensor_t)) {
+  if (data_len < sizeof(PAYLOAD_sensor_t)) {
     ESP_LOGE(TAG, "Receive ESPNOW data too short, len:%d", data_len);
     return ESP_FAIL;
   }
 
   payload->device_id = buf->device_id;
+  payload->message_id = buf->message_id;
   ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
   ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
   memcpy(payload->adc, buf->adc, sizeof(payload->adc));
@@ -110,24 +109,21 @@ static void recv_task(void *pvParameter) {
   NETWORK_event_t event;
   int ret;
 
-  vTaskDelay(500 / portTICK_RATE_MS);
+  vTaskDelay(100 / portTICK_RATE_MS);
   ESP_LOGI(TAG, "Start listening for broadcast data");
 
   while (xQueueReceive(recv_queue, &event, portMAX_DELAY) == pdTRUE) {
-    payload_sensor_t payload;
+    PAYLOAD_sensor_t payload;
 
     ret = data_parse(event.data, event.data_len, &payload);
     ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
-      if (count > 0x1FF) {
-        count = 0;
-      }
-      // hdisplay.pixels = ++count;
-      hdisplay.pixels = payload.adc[0];
+      hdisplay.pixels = payload.message_id;
       Display_update(&hdisplay);
 
-      ESP_LOGI(TAG, "Device: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+      ESP_LOGI(TAG, "Device: %d, msg_id: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
                 payload.device_id,
+                payload.message_id,
                 payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
                 event.data_len);
       // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
