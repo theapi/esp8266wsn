@@ -15,7 +15,11 @@
 #include "driver/adc.h"
 #include "driver/gpio.h"
 
+#include "device.h"
+
 #define PIN_MULTIPLEX 4
+#define GPIO_OUTPUT_PIN_SEL (1ULL<<PIN_MULTIPLEX)
+#define GPIO_INPUT_PIN_SEL  ((1ULL<<DEVICE_ID_PIN0) | (1ULL<<DEVICE_ID_PIN1) | (1ULL<<DEVICE_ID_PIN2) | (1ULL<<DEVICE_ID_PIN3))
 
 static const char *TAG = "transmitter";
 
@@ -105,12 +109,19 @@ static void setupGPIO() {
     //set as output mode
     io_conf.mode = GPIO_MODE_OUTPUT;
     //bit mask of the pins that you want to set,e.g.GPIO15/16
-    io_conf.pin_bit_mask = (1ULL << PIN_MULTIPLEX);
+    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
     //disable pull-down mode
     io_conf.pull_down_en = 0;
     //disable pull-up mode
     io_conf.pull_up_en = 0;
     //configure GPIO with the given settings
+    gpio_config(&io_conf);
+
+    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
+    //set as input mode
+    io_conf.mode = GPIO_MODE_INPUT;
+    //enable pull-up mode
+    io_conf.pull_up_en = 1;
     gpio_config(&io_conf);
 }
 
@@ -140,7 +151,7 @@ void app_espnow_data_prepare() {
 
   /* Map the buffer to the struct for ease of manipulation */
   PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)buffer;
-  buf->device_id = 250;
+  buf->device_id = Device_id();
   buf->message_id = ++msg_id;
   buf->crc = 0;
   //buf->adc[0] = 3300;   // will be battery reading

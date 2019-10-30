@@ -17,7 +17,7 @@ static void light_task(void *data) {
       if (val > 120) {
         Display_on(&hdisplay);
       } else if (val < 100) {
-        Display_off(&hdisplay);
+        //Display_off(&hdisplay);
       }
       // ESP_LOGI(TAG, "adc read: %d", val);
     }
