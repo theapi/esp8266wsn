@@ -143,6 +143,7 @@ void app_espnow_data_prepare() {
   PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)buffer;
   //esp_read_mac(buf->mac, ESP_MAC_WIFI_STA);
   esp_efuse_mac_get_default(buf->mac);
+  buf->message_type = 200;
   buf->message_id = ++msg_id;
   buf->crc = 0;
   readings_get(buf->adc);

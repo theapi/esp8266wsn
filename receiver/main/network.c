@@ -89,6 +89,7 @@ static int data_parse(uint8_t *data, uint16_t data_len,
   }
 
   memcpy(payload->mac, buf->mac, sizeof(payload->mac));
+  payload->message_type = buf->message_type;
   payload->message_id = buf->message_id;
   ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
   ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
@@ -121,9 +122,9 @@ static void recv_task(void *pvParameter) {
       hdisplay.pixels = payload.message_id;
       Display_update(&hdisplay);
 
-      ESP_LOGI(TAG, "Mac: %02x:%02x:%02x:%02x:%02x:%02x, msg_id: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+      ESP_LOGI(TAG, "Mac: %02x:%02x:%02x:%02x:%02x:%02x, type: %d, msg_id: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
                 payload.mac[0], payload.mac[1], payload.mac[2], payload.mac[3], payload.mac[4], payload.mac[5],
-                payload.message_id,
+                payload.message_type, payload.message_id,
                 payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
                 event.data_len);
       // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
