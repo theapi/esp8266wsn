@@ -88,7 +88,7 @@ static int data_parse(uint8_t *data, uint16_t data_len,
     return ESP_FAIL;
   }
 
-  payload->device_id = buf->device_id;
+  memcpy(payload->mac, buf->mac, sizeof(payload->mac));
   payload->message_id = buf->message_id;
   ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
   ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
@@ -121,8 +121,8 @@ static void recv_task(void *pvParameter) {
       hdisplay.pixels = payload.message_id;
       Display_update(&hdisplay);
 
-      ESP_LOGI(TAG, "Device: %d, msg_id: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
-                payload.device_id,
+      ESP_LOGI(TAG, "Mac: %02x:%02x:%02x:%02x:%02x:%02x, msg_id: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
+                payload.mac[0], payload.mac[1], payload.mac[2], payload.mac[3], payload.mac[4], payload.mac[5],
                 payload.message_id,
                 payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
                 event.data_len);

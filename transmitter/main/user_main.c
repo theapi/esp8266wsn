@@ -15,11 +15,8 @@
 #include "driver/adc.h"
 #include "driver/gpio.h"
 
-#include "device.h"
-
 #define PIN_MULTIPLEX 4
 #define GPIO_OUTPUT_PIN_SEL (1ULL<<PIN_MULTIPLEX)
-#define GPIO_INPUT_PIN_SEL  ((1ULL<<DEVICE_ID_PIN0) | (1ULL<<DEVICE_ID_PIN1) | (1ULL<<DEVICE_ID_PIN2) | (1ULL<<DEVICE_ID_PIN3))
 
 static const char *TAG = "transmitter";
 
@@ -116,13 +113,6 @@ static void setupGPIO() {
     io_conf.pull_up_en = 0;
     //configure GPIO with the given settings
     gpio_config(&io_conf);
-
-    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
-    //set as input mode
-    io_conf.mode = GPIO_MODE_INPUT;
-    //enable pull-up mode
-    io_conf.pull_up_en = 1;
-    gpio_config(&io_conf);
 }
 
 static void readings_get(uint16_t adc[2]) {
@@ -151,22 +141,23 @@ void app_espnow_data_prepare() {
 
   /* Map the buffer to the struct for ease of manipulation */
   PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)buffer;
-  buf->device_id = Device_id();
+  //esp_read_mac(buf->mac, ESP_MAC_WIFI_STA);
+  esp_efuse_mac_get_default(buf->mac);
   buf->message_id = ++msg_id;
   buf->crc = 0;
-  //buf->adc[0] = 3300;   // will be battery reading
-  //buf->adc[1] = 1234;  // will be the soil reading
   readings_get(buf->adc);
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
-  ESP_LOGI(TAG, "Device: %d, msg_id: %d, ADC_1: %d, ADC_2: %d",
-                buf->device_id,
+  ESP_LOGI(TAG, "Mac: %02X:%02X:%02X:%02X:%02X:%02X",
+                buf->mac[0], buf->mac[1], buf->mac[2], buf->mac[3], buf->mac[4], buf->mac[5]);
+  ESP_LOGI(TAG, "msg_id: %d, ADC_1: %d, ADC_2: %d",
                 buf->message_id,
                 buf->adc[0], buf->adc[1]);
 }
 
 static esp_err_t app_transmit() {
   app_espnow_data_prepare();
+  ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
 
   /* Start sending broadcast ESPNOW data. */
   if (esp_now_send(app_broadcast_mac, buffer, sizeof(PAYLOAD_sensor_t)) !=
