@@ -24305,44 +24305,8 @@ $EndComp
 Connection ~ 10175 4650
 Text GLabel 7350 3825 2    50   Input ~ 0
 TEMP_SENSE
-$Comp
-L Connector_Generic:Conn_01x05 J2
-U 1 1 5DBD3F8C
-P 8125 4125
-F 0 "J2" H 8075 4425 50  0000 L CNN
-F 1 "Conn_01x05" H 7925 3825 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical" H 8125 4125 50  0001 C CNN
-F 3 "~" H 8125 4125 50  0001 C CNN
-	1    8125 4125
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	7350 3925 7925 3925
-Wire Wire Line
-	7925 4025 7350 4025
-Wire Wire Line
-	7350 4125 7925 4125
-Wire Wire Line
-	7925 4225 7350 4225
-Wire Wire Line
-	7350 4325 7925 4325
-$Comp
-L Switch:SW_SPST SW2
-U 1 1 5DBD72AE
-P 2500 4375
-F 0 "SW2" H 2500 4610 50  0000 C CNN
-F 1 "SW_SPST" H 2500 4519 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 2500 4375 50  0001 C CNN
-F 3 "" H 2500 4375 50  0001 C CNN
-	1    2500 4375
-	1    0    0    -1  
-$EndComp
-Text Notes 4150 6325 0    50   ~ 0
-Connect the power pin \nof the USB to UART chip,\nwith a bodge wire, to the VIN pin \nof the voltage regulator pad
-Wire Notes Line width 28 rgb(0, 194, 0)
-	3300 6175 2700 6175
-Wire Notes Line width 28 rgb(0, 194, 0)
-	2700 6175 2700 6350
+Text Notes 4350 6100 0    50   ~ 0
+Connect the power pin \nof the USB to UART chip,\nwith a bodge wire, \nto either off or on.
 Text GLabel 3525 1175 2    50   Input ~ 0
 3V3
 Wire Wire Line
@@ -24365,14 +24329,8 @@ Wire Wire Line
 	3500 3925 3100 3925
 Wire Wire Line
 	3100 3925 3100 3950
-Wire Wire Line
-	3500 4025 3500 4375
-Wire Wire Line
-	3500 4375 2700 4375
-Text GLabel 2300 4375 0    50   Input ~ 0
+Text GLabel 4750 5175 2    50   Input ~ 0
 3V3
-Text Label 2800 4375 0    50   ~ 0
-USB_UART_PWR
 Wire Notes Line
 	600  650  3775 650 
 Wire Notes Line
@@ -24393,4 +24351,51 @@ Wire Notes Line
 	9000 5525 9000 650 
 Text Notes 9100 775  0    50   ~ 10
 Sensors
+NoConn ~ 3500 4025
+$Comp
+L Connector_Generic:Conn_01x01 J3
+U 1 1 5DBC844A
+P 4550 5550
+F 0 "J3" H 4550 5425 50  0000 C CNN
+F 1 "USB_UART_OFF" H 4500 5675 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical" H 4550 5550 50  0001 C CNN
+F 3 "~" H 4550 5550 50  0001 C CNN
+	1    4550 5550
+	-1   0    0    1   
+$EndComp
+Wire Notes Line width 31 rgb(0, 194, 0)
+	4275 6175 4275 5550
+Wire Notes Line width 31 rgb(0, 194, 0)
+	4275 5550 4525 5550
+Wire Notes Line width 31 rgb(0, 194, 0)
+	3300 6175 4275 6175
+$Comp
+L Connector_Generic:Conn_01x01 J4
+U 1 1 5DBCB146
+P 4550 5175
+F 0 "J4" H 4550 5050 50  0000 C CNN
+F 1 "USB_UART_ON" H 4525 5300 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical" H 4550 5175 50  0001 C CNN
+F 3 "~" H 4550 5175 50  0001 C CNN
+	1    4550 5175
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR010
+U 1 1 5DBCB1FE
+P 5325 5550
+F 0 "#PWR010" H 5325 5300 50  0001 C CNN
+F 1 "GND" H 5330 5377 50  0000 C CNN
+F 2 "" H 5325 5550 50  0001 C CNN
+F 3 "" H 5325 5550 50  0001 C CNN
+	1    5325 5550
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	4750 5550 5325 5550
+NoConn ~ 7350 3925
+NoConn ~ 7350 4025
+NoConn ~ 7350 4125
+NoConn ~ 7350 4225
+NoConn ~ 7350 4325
 $EndSCHEMATC
