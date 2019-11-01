@@ -15,8 +15,10 @@
 #include "driver/adc.h"
 #include "driver/gpio.h"
 
-#define PIN_MULTIPLEX 4
-#define GPIO_OUTPUT_PIN_SEL (1ULL<<PIN_MULTIPLEX)
+#define PIN_MULTIPLEX_A 14 // D5 (nodemcu)
+#define PIN_MULTIPLEX_B 12 // D6 (nodemcu)
+#define PIN_MULTIPLEX_C 13 // D7 (nodemcu)
+#define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) )
 
 static const char *TAG = "transmitter";
 
@@ -116,12 +118,12 @@ static void setupGPIO() {
 }
 
 static void readings_get(uint16_t adc[2]) {
-  gpio_set_level(PIN_MULTIPLEX, 0);
+  gpio_set_level(PIN_MULTIPLEX_A, 0);
   adc_read(&adc[0]);
   // change multiplexer
-  gpio_set_level(PIN_MULTIPLEX, 1);
+  gpio_set_level(PIN_MULTIPLEX_A, 1);
   adc_read(&adc[1]);
-  gpio_set_level(PIN_MULTIPLEX, 0);
+  gpio_set_level(PIN_MULTIPLEX_A, 0);
 }
 
 esp_err_t readings_init() {
