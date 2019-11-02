@@ -115,7 +115,7 @@ U 1 1 5DBC220B
 P 875 2800
 F 0 "BT1" H 983 2846 50  0000 L CNN
 F 1 "Battery" H 983 2755 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" V 875 2860 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" V 875 2860 50  0001 C CNN
 F 3 "~" V 875 2860 50  0001 C CNN
 	1    875  2800
 	1    0    0    -1  
@@ -276,7 +276,7 @@ Wire Wire Line
 Connection ~ 1700 1225
 Text GLabel 1300 1225 0    50   Input ~ 0
 BATT_SENSE
-Text GLabel 9875 4325 2    50   Input ~ 0
+Text GLabel 9875 4825 2    50   Input ~ 0
 BATT_SENSE
 $Comp
 L power:GND #PWR03
@@ -321,7 +321,7 @@ U 1 1 5DBCE740
 P 3225 1350
 F 0 "J1" H 3304 1342 50  0000 L CNN
 F 1 "SOIL" H 3304 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 3225 1350 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" H 3225 1350 50  0001 C CNN
 F 3 "~" H 3225 1350 50  0001 C CNN
 	1    3225 1350
 	1    0    0    -1  
@@ -24353,7 +24353,7 @@ Wire Wire Line
 	7625 3925 8025 3925
 Text GLabel 7625 3825 2    50   Input ~ 0
 3V3
-Text GLabel 9875 4425 2    50   Input ~ 0
+Text GLabel 9875 4525 2    50   Input ~ 0
 SOIL_1
 $Comp
 L Device:R R4
@@ -24372,7 +24372,7 @@ U 1 1 5DBD7696
 P 4050 1350
 F 0 "J2" H 4129 1342 50  0000 L CNN
 F 1 "SOIL" H 4129 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 4050 1350 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" H 4050 1350 50  0001 C CNN
 F 3 "~" H 4050 1350 50  0001 C CNN
 	1    4050 1350
 	1    0    0    -1  
@@ -24411,7 +24411,7 @@ U 1 1 5DBD8349
 P 4925 1350
 F 0 "J5" H 5004 1342 50  0000 L CNN
 F 1 "SOIL" H 5004 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 4925 1350 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" H 4925 1350 50  0001 C CNN
 F 3 "~" H 4925 1350 50  0001 C CNN
 	1    4925 1350
 	1    0    0    -1  
@@ -24450,7 +24450,7 @@ U 1 1 5DBD8360
 P 5750 1350
 F 0 "J6" H 5829 1342 50  0000 L CNN
 F 1 "SOIL" H 5829 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 5750 1350 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" H 5750 1350 50  0001 C CNN
 F 3 "~" H 5750 1350 50  0001 C CNN
 	1    5750 1350
 	1    0    0    -1  
@@ -24489,7 +24489,7 @@ U 1 1 5DBDBB99
 P 6600 1350
 F 0 "J7" H 6679 1342 50  0000 L CNN
 F 1 "SOIL" H 6679 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 6600 1350 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" H 6600 1350 50  0001 C CNN
 F 3 "~" H 6600 1350 50  0001 C CNN
 	1    6600 1350
 	1    0    0    -1  
@@ -24528,7 +24528,7 @@ U 1 1 5DBDBBAF
 P 7475 1350
 F 0 "J8" H 7554 1342 50  0000 L CNN
 F 1 "SOIL" H 7554 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7475 1350 50  0001 C CNN
+F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" H 7475 1350 50  0001 C CNN
 F 3 "~" H 7475 1350 50  0001 C CNN
 	1    7475 1350
 	1    0    0    -1  
@@ -24550,45 +24550,6 @@ F 3 "" H 7275 1450 50  0001 C CNN
 $EndComp
 Text GLabel 7275 1350 0    50   Input ~ 0
 SOIL_6
-$Comp
-L Device:R R9
-U 1 1 5DBDBBBF
-P 8100 1100
-F 0 "R9" H 8170 1146 50  0000 L CNN
-F 1 "10K" H 8170 1055 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 8030 1100 50  0001 C CNN
-F 3 "~" H 8100 1100 50  0001 C CNN
-	1    8100 1100
-	1    0    0    -1  
-$EndComp
-$Comp
-L Connector_Generic:Conn_01x02 J9
-U 1 1 5DBDBBC5
-P 8300 1350
-F 0 "J9" H 8379 1342 50  0000 L CNN
-F 1 "SOIL" H 8379 1251 50  0000 L CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8300 1350 50  0001 C CNN
-F 3 "~" H 8300 1350 50  0001 C CNN
-	1    8300 1350
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	8100 800  8100 950 
-Wire Wire Line
-	8100 1250 8100 1350
-$Comp
-L power:GND #PWR015
-U 1 1 5DBDBBCE
-P 8100 1450
-F 0 "#PWR015" H 8100 1200 50  0001 C CNN
-F 1 "GND" H 8105 1277 50  0000 C CNN
-F 2 "" H 8100 1450 50  0001 C CNN
-F 3 "" H 8100 1450 50  0001 C CNN
-	1    8100 1450
-	1    0    0    -1  
-$EndComp
-Text GLabel 8100 1350 0    50   Input ~ 0
-SOIL_7
 Wire Notes Line
 	600  550  600  1900
 Wire Notes Line
@@ -24622,19 +24583,103 @@ Connection ~ 5550 800
 Wire Wire Line
 	6400 800  7275 800 
 Connection ~ 6400 800 
-Wire Wire Line
-	7275 800  8100 800 
-Connection ~ 7275 800 
-Text GLabel 9875 4525 2    50   Input ~ 0
+Text GLabel 9875 4425 2    50   Input ~ 0
 SOIL_2
-Text GLabel 9875 4625 2    50   Input ~ 0
+Text GLabel 9875 4325 2    50   Input ~ 0
 SOIL_3
-Text GLabel 9875 4725 2    50   Input ~ 0
+Text GLabel 9875 4625 2    50   Input ~ 0
 SOIL_4
-Text GLabel 9875 4825 2    50   Input ~ 0
+Text GLabel 9875 4725 2    50   Input ~ 0
 SOIL_5
 Text GLabel 9875 4925 2    50   Input ~ 0
 SOIL_6
-Text GLabel 9875 5025 2    50   Input ~ 0
-SOIL_7
+$Comp
+L Mechanical:MountingHole_Pad H1
+U 1 1 5DBE4537
+P 1200 4150
+F 0 "H1" H 1300 4201 50  0000 L CNN
+F 1 "MountingHole" H 1000 4325 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1200 4150 50  0001 C CNN
+F 3 "~" H 1200 4150 50  0001 C CNN
+	1    1200 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR016
+U 1 1 5DBE45D3
+P 1200 4250
+F 0 "#PWR016" H 1200 4000 50  0001 C CNN
+F 1 "GND" H 1205 4077 50  0000 C CNN
+F 2 "" H 1200 4250 50  0001 C CNN
+F 3 "" H 1200 4250 50  0001 C CNN
+	1    1200 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H2
+U 1 1 5DBE47CF
+P 1800 4150
+F 0 "H2" H 1900 4201 50  0000 L CNN
+F 1 "MountingHole" H 1600 4325 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1800 4150 50  0001 C CNN
+F 3 "~" H 1800 4150 50  0001 C CNN
+	1    1800 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR017
+U 1 1 5DBE47D5
+P 1800 4250
+F 0 "#PWR017" H 1800 4000 50  0001 C CNN
+F 1 "GND" H 1805 4077 50  0000 C CNN
+F 2 "" H 1800 4250 50  0001 C CNN
+F 3 "" H 1800 4250 50  0001 C CNN
+	1    1800 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H3
+U 1 1 5DBE5750
+P 2400 4150
+F 0 "H3" H 2500 4201 50  0000 L CNN
+F 1 "MountingHole" H 2200 4325 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 2400 4150 50  0001 C CNN
+F 3 "~" H 2400 4150 50  0001 C CNN
+	1    2400 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR018
+U 1 1 5DBE5756
+P 2400 4250
+F 0 "#PWR018" H 2400 4000 50  0001 C CNN
+F 1 "GND" H 2405 4077 50  0000 C CNN
+F 2 "" H 2400 4250 50  0001 C CNN
+F 3 "" H 2400 4250 50  0001 C CNN
+	1    2400 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole_Pad H4
+U 1 1 5DBE575C
+P 3000 4150
+F 0 "H4" H 3100 4201 50  0000 L CNN
+F 1 "MountingHole" H 2800 4325 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 3000 4150 50  0001 C CNN
+F 3 "~" H 3000 4150 50  0001 C CNN
+	1    3000 4150
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR019
+U 1 1 5DBE5762
+P 3000 4250
+F 0 "#PWR019" H 3000 4000 50  0001 C CNN
+F 1 "GND" H 3005 4077 50  0000 C CNN
+F 2 "" H 3000 4250 50  0001 C CNN
+F 3 "" H 3000 4250 50  0001 C CNN
+	1    3000 4250
+	1    0    0    -1  
+$EndComp
+NoConn ~ 9875 5025
 $EndSCHEMATC
