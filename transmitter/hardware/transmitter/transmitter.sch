@@ -82,12 +82,12 @@ Connection ~ 9325 5350
 $Comp
 L power:GND #PWR06
 U 1 1 5DBC1A3A
-P 2225 3125
-F 0 "#PWR06" H 2225 2875 50  0001 C CNN
-F 1 "GND" H 2230 2952 50  0000 C CNN
-F 2 "" H 2225 3125 50  0001 C CNN
-F 3 "" H 2225 3125 50  0001 C CNN
-	1    2225 3125
+P 2625 3125
+F 0 "#PWR06" H 2625 2875 50  0001 C CNN
+F 1 "GND" H 2630 2952 50  0000 C CNN
+F 2 "" H 2625 3125 50  0001 C CNN
+F 3 "" H 2625 3125 50  0001 C CNN
+	1    2625 3125
 	1    0    0    -1  
 $EndComp
 NoConn ~ 6025 3425
@@ -101,12 +101,12 @@ NoConn ~ 6025 4125
 $Comp
 L Regulator_Linear:MCP1700-3302E_SOT89 U2
 U 1 1 5DBC1D4F
-P 2225 2600
-F 0 "U2" H 2225 2842 50  0000 C CNN
-F 1 "MCP1700-3302E_SOT89" H 2225 2751 50  0000 C CNN
-F 2 "Package_TO_SOT_SMD:SOT-89-3" H 2225 2800 50  0001 C CNN
-F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001826C.pdf" H 2225 2550 50  0001 C CNN
-	1    2225 2600
+P 2625 2600
+F 0 "U2" H 2625 2842 50  0000 C CNN
+F 1 "MCP1700-3302E_SOT89" H 2625 2751 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-89-3" H 2625 2800 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001826C.pdf" H 2625 2550 50  0001 C CNN
+	1    2625 2600
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -123,51 +123,46 @@ $EndComp
 $Comp
 L Device:C_Small C3
 U 1 1 5DBC2404
-P 1475 2800
-F 0 "C3" H 1567 2846 50  0000 L CNN
-F 1 "1uF" H 1567 2755 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 1475 2800 50  0001 C CNN
-F 3 "~" H 1475 2800 50  0001 C CNN
-	1    1475 2800
+P 2050 2800
+F 0 "C3" H 2142 2846 50  0000 L CNN
+F 1 "1uF" H 2142 2755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 2050 2800 50  0001 C CNN
+F 3 "~" H 2050 2800 50  0001 C CNN
+	1    2050 2800
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:C_Small C4
 U 1 1 5DBC2493
-P 2950 2800
-F 0 "C4" H 3042 2846 50  0000 L CNN
-F 1 "1uF" H 3042 2755 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 2950 2800 50  0001 C CNN
-F 3 "~" H 2950 2800 50  0001 C CNN
-	1    2950 2800
+P 3350 2800
+F 0 "C4" H 3442 2846 50  0000 L CNN
+F 1 "1uF" H 3442 2755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3350 2800 50  0001 C CNN
+F 3 "~" H 3350 2800 50  0001 C CNN
+	1    3350 2800
 	1    0    0    -1  
 $EndComp
 Wire Wire Line
-	2950 2700 2950 2600
+	3350 2700 3350 2600
 Wire Wire Line
-	2950 2600 2525 2600
+	3350 2600 2925 2600
 Wire Wire Line
-	875  2600 1475 2600
+	2050 2700 2050 2600
 Wire Wire Line
-	1475 2700 1475 2600
-Connection ~ 1475 2600
+	2050 2900 2625 2900
 Wire Wire Line
-	1475 2600 1925 2600
+	3350 2900 2625 2900
+Connection ~ 2625 2900
 Wire Wire Line
-	1475 2900 2225 2900
-Wire Wire Line
-	2950 2900 2225 2900
-Connection ~ 2225 2900
-Wire Wire Line
-	2225 2900 2225 3050
+	2625 2900 2625 3050
 Wire Wire Line
 	875  3000 875  3050
 Wire Wire Line
-	875  3050 2225 3050
-Connection ~ 2225 3050
+	875  3050 2625 3050
+Connection ~ 2625 3050
 Wire Wire Line
-	2225 3050 2225 3125
-Text Label 1125 2600 0    50   ~ 0
+	2625 3050 2625 3125
+Text Label 1825 2600 0    50   ~ 0
 BATT
 NoConn ~ 6025 4425
 Text GLabel 6025 4525 0    50   Input ~ 0
@@ -24235,8 +24230,8 @@ Connect the power pin \nof the USB to UART chip,\nwith a bodge wire, \nto either
 Text GLabel 3525 2600 2    50   Input ~ 0
 3V3
 Wire Wire Line
-	2950 2600 3525 2600
-Connection ~ 2950 2600
+	3350 2600 3525 2600
+Connection ~ 3350 2600
 Text GLabel 6025 4325 0    50   Input ~ 0
 3V3
 $Comp
@@ -24268,7 +24263,6 @@ Text Notes 650  2225 0    79   ~ 16
 Power
 Text Notes 650  700  0    79   ~ 16
 Sensors
-NoConn ~ 6025 4725
 $Comp
 L Connector_Generic:Conn_01x01 J3
 U 1 1 5DBC844A
@@ -24637,49 +24631,38 @@ F 3 "" H 1800 4250 50  0001 C CNN
 	1    1800 4250
 	1    0    0    -1  
 $EndComp
-$Comp
-L Mechanical:MountingHole_Pad H3
-U 1 1 5DBE5750
-P 2400 4150
-F 0 "H3" H 2500 4201 50  0000 L CNN
-F 1 "MountingHole" H 2200 4325 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 2400 4150 50  0001 C CNN
-F 3 "~" H 2400 4150 50  0001 C CNN
-	1    2400 4150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR018
-U 1 1 5DBE5756
-P 2400 4250
-F 0 "#PWR018" H 2400 4000 50  0001 C CNN
-F 1 "GND" H 2405 4077 50  0000 C CNN
-F 2 "" H 2400 4250 50  0001 C CNN
-F 3 "" H 2400 4250 50  0001 C CNN
-	1    2400 4250
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole_Pad H4
-U 1 1 5DBE575C
-P 3000 4150
-F 0 "H4" H 3100 4201 50  0000 L CNN
-F 1 "MountingHole" H 2800 4325 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 3000 4150 50  0001 C CNN
-F 3 "~" H 3000 4150 50  0001 C CNN
-	1    3000 4150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR019
-U 1 1 5DBE5762
-P 3000 4250
-F 0 "#PWR019" H 3000 4000 50  0001 C CNN
-F 1 "GND" H 3005 4077 50  0000 C CNN
-F 2 "" H 3000 4250 50  0001 C CNN
-F 3 "" H 3000 4250 50  0001 C CNN
-	1    3000 4250
-	1    0    0    -1  
-$EndComp
 NoConn ~ 9875 5025
+Text Label 5825 4725 0    50   ~ 0
+BATT
+Wire Wire Line
+	6025 4725 5825 4725
+$Comp
+L Device:Polyfuse_Small F1
+U 1 1 5DBEC73F
+P 1175 2600
+F 0 "F1" V 970 2600 50  0000 C CNN
+F 1 "Polyfuse" V 1061 2600 50  0000 C CNN
+F 2 "Fuse:Fuse_1812_4532Metric_Pad1.30x3.40mm_HandSolder" H 1225 2400 50  0001 L CNN
+F 3 "~" H 1175 2600 50  0001 C CNN
+	1    1175 2600
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	875  2600 1075 2600
+$Comp
+L Switch:SW_SPST SW2
+U 1 1 5DBF0754
+P 1475 2600
+F 0 "SW2" H 1425 2700 50  0000 L CNN
+F 1 "SW" H 1425 2525 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 1475 2600 50  0001 C CNN
+F 3 "" H 1475 2600 50  0001 C CNN
+	1    1475 2600
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	1675 2600 2050 2600
+Wire Wire Line
+	2050 2600 2325 2600
+Connection ~ 2050 2600
 $EndSCHEMATC
