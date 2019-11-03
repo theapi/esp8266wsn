@@ -110,17 +110,6 @@ F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20001826C.pdf" H 2625 2550 
 	1    0    0    -1  
 $EndComp
 $Comp
-L Device:Battery BT1
-U 1 1 5DBC220B
-P 875 2800
-F 0 "BT1" H 983 2846 50  0000 L CNN
-F 1 "Battery" H 983 2755 50  0000 L CNN
-F 2 "Connector_JST:JST_XH_B02B-XH-A_1x02_P2.50mm_Vertical" V 875 2860 50  0001 C CNN
-F 3 "~" V 875 2860 50  0001 C CNN
-	1    875  2800
-	1    0    0    -1  
-$EndComp
-$Comp
 L Device:C_Small C3
 U 1 1 5DBC2404
 P 2050 2800
@@ -153,17 +142,8 @@ Wire Wire Line
 Wire Wire Line
 	3350 2900 2625 2900
 Connection ~ 2625 2900
-Wire Wire Line
-	2625 2900 2625 3050
-Wire Wire Line
-	875  3000 875  3050
-Wire Wire Line
-	875  3050 2625 3050
-Connection ~ 2625 3050
-Wire Wire Line
-	2625 3050 2625 3125
 Text Label 1825 2600 0    50   ~ 0
-BATT
+PWR
 NoConn ~ 6025 4425
 Text GLabel 6025 4525 0    50   Input ~ 0
 RESET
@@ -261,7 +241,7 @@ F 3 "" H 1700 1525 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Text Label 1500 825  0    50   ~ 0
-BATT
+PWR
 Wire Wire Line
 	1700 925  1700 825 
 Wire Wire Line
@@ -24249,7 +24229,7 @@ Wire Wire Line
 	6025 4625 5625 4625
 Wire Wire Line
 	5625 4625 5625 4650
-Text GLabel 4125 5750 2    50   Input ~ 0
+Text GLabel 4125 6025 2    50   Input ~ 0
 3V3
 Wire Notes Line
 	600  2075 3775 2075
@@ -24263,34 +24243,12 @@ Text Notes 650  2225 0    79   ~ 16
 Power
 Text Notes 650  700  0    79   ~ 16
 Sensors
-$Comp
-L Connector_Generic:Conn_01x01 J3
-U 1 1 5DBC844A
-P 3925 6125
-F 0 "J3" H 3925 6000 50  0000 C CNN
-F 1 "USB_UART_OFF" H 3875 6250 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical" H 3925 6125 50  0001 C CNN
-F 3 "~" H 3925 6125 50  0001 C CNN
-	1    3925 6125
-	-1   0    0    1   
-$EndComp
 Wire Notes Line width 31 rgb(0, 194, 0)
 	3650 6750 3650 6125
 Wire Notes Line width 31 rgb(0, 194, 0)
 	3650 6125 3900 6125
 Wire Notes Line width 31 rgb(0, 194, 0)
 	2675 6750 3650 6750
-$Comp
-L Connector_Generic:Conn_01x01 J4
-U 1 1 5DBCB146
-P 3925 5750
-F 0 "J4" H 3925 5625 50  0000 C CNN
-F 1 "USB_UART_ON" H 3900 5875 50  0000 C CNN
-F 2 "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical" H 3925 5750 50  0001 C CNN
-F 3 "~" H 3925 5750 50  0001 C CNN
-	1    3925 5750
-	-1   0    0    1   
-$EndComp
 $Comp
 L power:GND #PWR010
 U 1 1 5DBCB1FE
@@ -24587,53 +24545,9 @@ Text GLabel 9875 4725 2    50   Input ~ 0
 SOIL_5
 Text GLabel 9875 4925 2    50   Input ~ 0
 SOIL_6
-$Comp
-L Mechanical:MountingHole_Pad H1
-U 1 1 5DBE4537
-P 1200 4150
-F 0 "H1" H 1300 4201 50  0000 L CNN
-F 1 "MountingHole" H 1000 4325 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1200 4150 50  0001 C CNN
-F 3 "~" H 1200 4150 50  0001 C CNN
-	1    1200 4150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR016
-U 1 1 5DBE45D3
-P 1200 4250
-F 0 "#PWR016" H 1200 4000 50  0001 C CNN
-F 1 "GND" H 1205 4077 50  0000 C CNN
-F 2 "" H 1200 4250 50  0001 C CNN
-F 3 "" H 1200 4250 50  0001 C CNN
-	1    1200 4250
-	1    0    0    -1  
-$EndComp
-$Comp
-L Mechanical:MountingHole_Pad H2
-U 1 1 5DBE47CF
-P 1800 4150
-F 0 "H2" H 1900 4201 50  0000 L CNN
-F 1 "MountingHole" H 1600 4325 50  0000 L CNN
-F 2 "MountingHole:MountingHole_3.2mm_M3_Pad" H 1800 4150 50  0001 C CNN
-F 3 "~" H 1800 4150 50  0001 C CNN
-	1    1800 4150
-	1    0    0    -1  
-$EndComp
-$Comp
-L power:GND #PWR017
-U 1 1 5DBE47D5
-P 1800 4250
-F 0 "#PWR017" H 1800 4000 50  0001 C CNN
-F 1 "GND" H 1805 4077 50  0000 C CNN
-F 2 "" H 1800 4250 50  0001 C CNN
-F 3 "" H 1800 4250 50  0001 C CNN
-	1    1800 4250
-	1    0    0    -1  
-$EndComp
 NoConn ~ 9875 5025
 Text Label 5825 4725 0    50   ~ 0
-BATT
+PWR
 Wire Wire Line
 	6025 4725 5825 4725
 $Comp
@@ -24647,13 +24561,11 @@ F 3 "~" H 1175 2600 50  0001 C CNN
 	1    1175 2600
 	0    1    1    0   
 $EndComp
-Wire Wire Line
-	875  2600 1075 2600
 $Comp
-L Switch:SW_SPST SW?
+L Switch:SW_SPST SW2
 U 1 1 5DBF0754
 P 1475 2600
-F 0 "SW?" H 1425 2700 50  0000 L CNN
+F 0 "SW2" H 1425 2700 50  0000 L CNN
 F 1 "SW" H 1425 2525 50  0000 L CNN
 F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 1475 2600 50  0001 C CNN
 F 3 "" H 1475 2600 50  0001 C CNN
@@ -24665,4 +24577,43 @@ Wire Wire Line
 Wire Wire Line
 	2050 2600 2325 2600
 Connection ~ 2050 2600
+$Comp
+L Connector_Generic:Conn_01x02 J3
+U 1 1 5DBF3074
+P 3925 6125
+F 0 "J3" H 3900 6250 50  0000 L CNN
+F 1 "USB_UART" H 3725 5900 50  0000 L CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 3925 6125 50  0001 C CNN
+F 3 "~" H 3925 6125 50  0001 C CNN
+	1    3925 6125
+	-1   0    0    1   
+$EndComp
+$Comp
+L Connector_Generic:Conn_01x02 J4
+U 1 1 5DBF418E
+P 825 2950
+F 0 "J4" H 825 2675 50  0000 C CNN
+F 1 "PWR" H 825 2750 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 825 2950 50  0001 C CNN
+F 3 "~" H 825 2950 50  0001 C CNN
+	1    825  2950
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	2625 2900 2625 3125
+Text Notes 650  3275 0    50   ~ 0
+Lipo \nTP4056\nCharging Board
+Wire Wire Line
+	1075 2600 1025 2600
+Wire Wire Line
+	1025 2600 1025 2850
+Wire Wire Line
+	1025 2950 1025 3125
+Wire Wire Line
+	1025 3125 2625 3125
+Connection ~ 2625 3125
+Text Label 1025 2775 0    50   ~ 0
+OUT+
+Text Label 1025 3050 0    50   ~ 0
+OUT-
 $EndSCHEMATC

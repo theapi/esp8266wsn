@@ -70,23 +70,6 @@ X C 9 -500 300 100 R 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
-# Connector_Generic_Conn_01x01
-#
-DEF Connector_Generic_Conn_01x01 J 0 40 Y N 1 F N
-F0 "J" 0 100 50 H V C CNN
-F1 "Connector_Generic_Conn_01x01" 0 -100 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-$FPLIST
- Connector*:*
-$ENDFPLIST
-DRAW
-S -50 5 0 -5 1 1 6 N
-S -50 50 50 -50 1 1 10 f
-X Pin_1 1 -200 0 150 R 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
 # Connector_Generic_Conn_01x02
 #
 DEF Connector_Generic_Conn_01x02 J 0 40 Y N 1 F N
@@ -103,31 +86,6 @@ S -50 5 0 -5 1 1 6 N
 S -50 50 50 -150 1 1 10 f
 X Pin_1 1 -200 0 150 R 50 50 1 1 P
 X Pin_2 2 -200 -100 150 R 50 50 1 1 P
-ENDDRAW
-ENDDEF
-#
-# Device_Battery
-#
-DEF Device_Battery BT 0 0 N N 1 F N
-F0 "BT" 100 100 50 H V L CNN
-F1 "Device_Battery" 100 0 50 H V L CNN
-F2 "" 0 60 50 V I C CNN
-F3 "" 0 60 50 V I C CNN
-DRAW
-S -80 -55 80 -65 0 1 0 F
-S -80 70 80 60 0 1 0 F
-S -52 -78 50 -98 0 1 0 F
-S -52 47 50 27 0 1 0 F
-P 2 0 1 0 0 -60 0 -50 N
-P 2 0 1 0 0 -40 0 -30 N
-P 2 0 1 0 0 -20 0 -10 N
-P 2 0 1 0 0 0 0 10 N
-P 2 0 1 0 0 20 0 30 N
-P 2 0 1 0 0 70 0 100 N
-P 2 0 1 10 10 105 50 105 N
-P 2 0 1 10 30 125 30 85 N
-X + 1 0 200 100 D 50 50 1 1 P
-X - 2 0 -200 100 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
@@ -225,22 +183,6 @@ X SD1(MOSI) 6 -800 200 200 R 50 50 1 1 B
 X CMD(CS) 7 -800 100 200 R 50 50 1 1 B
 X SDO(MISO) 8 -800 0 200 R 50 50 1 1 B
 X CLK(SCLK) 9 -800 -100 200 R 50 50 1 1 B
-ENDDRAW
-ENDDEF
-#
-# Mechanical_MountingHole_Pad
-#
-DEF Mechanical_MountingHole_Pad H 0 40 N N 1 F N
-F0 "H" 0 250 50 H V C CNN
-F1 "Mechanical_MountingHole_Pad" 0 175 50 H V C CNN
-F2 "" 0 0 50 H I C CNN
-F3 "" 0 0 50 H I C CNN
-$FPLIST
- MountingHole*Pad*
-$ENDFPLIST
-DRAW
-C 0 50 50 0 1 50 N
-X 1 1 0 -100 100 U 50 50 1 1 I
 ENDDRAW
 ENDDEF
 #
