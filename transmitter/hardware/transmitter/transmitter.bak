@@ -82,12 +82,12 @@ Connection ~ 9325 5350
 $Comp
 L power:GND #PWR06
 U 1 1 5DBC1A3A
-P 2625 3125
-F 0 "#PWR06" H 2625 2875 50  0001 C CNN
-F 1 "GND" H 2630 2952 50  0000 C CNN
-F 2 "" H 2625 3125 50  0001 C CNN
-F 3 "" H 2625 3125 50  0001 C CNN
-	1    2625 3125
+P 2625 2900
+F 0 "#PWR06" H 2625 2650 50  0001 C CNN
+F 1 "GND" H 2630 2727 50  0000 C CNN
+F 2 "" H 2625 2900 50  0001 C CNN
+F 3 "" H 2625 2900 50  0001 C CNN
+	1    2625 2900
 	1    0    0    -1  
 $EndComp
 NoConn ~ 6025 3425
@@ -112,36 +112,25 @@ $EndComp
 $Comp
 L Device:C_Small C3
 U 1 1 5DBC2404
-P 2050 2800
-F 0 "C3" H 2142 2846 50  0000 L CNN
-F 1 "1uF" H 2142 2755 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 2050 2800 50  0001 C CNN
-F 3 "~" H 2050 2800 50  0001 C CNN
-	1    2050 2800
+P 2150 2700
+F 0 "C3" H 2242 2746 50  0000 L CNN
+F 1 "1uF" H 2242 2655 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 2150 2700 50  0001 C CNN
+F 3 "~" H 2150 2700 50  0001 C CNN
+	1    2150 2700
 	1    0    0    -1  
 $EndComp
 $Comp
 L Device:C_Small C4
 U 1 1 5DBC2493
-P 3350 2800
-F 0 "C4" H 3442 2846 50  0000 L CNN
-F 1 "1uF" H 3442 2755 50  0000 L CNN
-F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3350 2800 50  0001 C CNN
-F 3 "~" H 3350 2800 50  0001 C CNN
-	1    3350 2800
+P 3000 2700
+F 0 "C4" H 3092 2746 50  0000 L CNN
+F 1 "1uF" H 3092 2655 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3000 2700 50  0001 C CNN
+F 3 "~" H 3000 2700 50  0001 C CNN
+	1    3000 2700
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	3350 2700 3350 2600
-Wire Wire Line
-	3350 2600 2925 2600
-Wire Wire Line
-	2050 2700 2050 2600
-Wire Wire Line
-	2050 2900 2625 2900
-Wire Wire Line
-	3350 2900 2625 2900
-Connection ~ 2625 2900
 Text Label 1825 2600 0    50   ~ 0
 PWR
 NoConn ~ 6025 4425
@@ -24207,11 +24196,8 @@ EndData
 $EndBitmap
 Text Notes 3725 6675 0    50   ~ 0
 Connect the power pin \nof the USB to UART chip,\nwith a bodge wire, \nto either off or on.
-Text GLabel 3525 2600 2    50   Input ~ 0
+Text GLabel 4175 2600 2    50   Input ~ 0
 3V3
-Wire Wire Line
-	3350 2600 3525 2600
-Connection ~ 3350 2600
 Text GLabel 6025 4325 0    50   Input ~ 0
 3V3
 $Comp
@@ -24232,13 +24218,9 @@ Wire Wire Line
 Text GLabel 4125 6025 2    50   Input ~ 0
 3V3
 Wire Notes Line
-	600  2075 3775 2075
+	600  2075 4425 2075
 Wire Notes Line
-	3775 2075 3775 3475
-Wire Notes Line
-	3775 3475 600  3475
-Wire Notes Line
-	600  3475 600  2075
+	4425 4075 600  4075
 Text Notes 650  2225 0    79   ~ 16
 Power
 Text Notes 650  700  0    79   ~ 16
@@ -24572,11 +24554,6 @@ F 3 "" H 1475 2600 50  0001 C CNN
 	1    1475 2600
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	1675 2600 2050 2600
-Wire Wire Line
-	2050 2600 2325 2600
-Connection ~ 2050 2600
 $Comp
 L Connector_Generic:Conn_01x02 J3
 U 1 1 5DBF3074
@@ -24599,9 +24576,7 @@ F 3 "~" H 825 2950 50  0001 C CNN
 	1    825  2950
 	-1   0    0    1   
 $EndComp
-Wire Wire Line
-	2625 2900 2625 3125
-Text Notes 650  3275 0    50   ~ 0
+Text Notes 625  3450 0    50   ~ 0
 Lipo \nTP4056\nCharging Board
 Wire Wire Line
 	1075 2600 1025 2600
@@ -24609,11 +24584,123 @@ Wire Wire Line
 	1025 2600 1025 2850
 Wire Wire Line
 	1025 2950 1025 3125
-Wire Wire Line
-	1025 3125 2625 3125
-Connection ~ 2625 3125
 Text Label 1025 2775 0    50   ~ 0
 OUT+
 Text Label 1025 3050 0    50   ~ 0
 OUT-
+$Comp
+L Regulator_Linear:MCP1703A-3302_SOT223 U4
+U 1 1 5DC182DA
+P 2625 3475
+F 0 "U4" H 2625 3717 50  0000 C CNN
+F 1 "MCP1703A-3302_SOT223" H 2625 3626 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 2625 3675 50  0001 C CNN
+F 3 "http://ww1.microchip.com/downloads/en/DeviceDoc/20005122B.pdf" H 2625 3425 50  0001 C CNN
+	1    2625 3475
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	2325 3475 2175 3475
+Wire Wire Line
+	2925 3475 3025 3475
+$Comp
+L power:GND #PWR016
+U 1 1 5DC1D21C
+P 2625 3775
+F 0 "#PWR016" H 2625 3525 50  0001 C CNN
+F 1 "GND" H 2630 3602 50  0000 C CNN
+F 2 "" H 2625 3775 50  0001 C CNN
+F 3 "" H 2625 3775 50  0001 C CNN
+	1    2625 3775
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:GND #PWR015
+U 1 1 5DC1E5D1
+P 1025 3125
+F 0 "#PWR015" H 1025 2875 50  0001 C CNN
+F 1 "GND" H 1030 2952 50  0000 C CNN
+F 2 "" H 1025 3125 50  0001 C CNN
+F 3 "" H 1025 3125 50  0001 C CNN
+	1    1025 3125
+	1    0    0    -1  
+$EndComp
+Wire Notes Line
+	600  2075 600  4075
+Wire Notes Line
+	4425 2075 4425 4075
+Connection ~ 3000 2600
+Wire Wire Line
+	3000 2600 2925 2600
+Connection ~ 2150 2600
+Wire Wire Line
+	2150 2600 2325 2600
+Wire Wire Line
+	1675 2600 1775 2600
+Wire Wire Line
+	3000 2600 3350 2600
+Wire Wire Line
+	2150 2800 2150 2900
+Wire Wire Line
+	2150 2900 2625 2900
+Connection ~ 2625 2900
+Wire Wire Line
+	2625 2900 3000 2900
+Wire Wire Line
+	3000 2900 3000 2800
+$Comp
+L Device:C_Small C5
+U 1 1 5DC24C67
+P 2175 3575
+F 0 "C5" H 2267 3621 50  0000 L CNN
+F 1 "1uF" H 2267 3530 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 2175 3575 50  0001 C CNN
+F 3 "~" H 2175 3575 50  0001 C CNN
+	1    2175 3575
+	1    0    0    -1  
+$EndComp
+Connection ~ 2175 3475
+$Comp
+L Device:C_Small C6
+U 1 1 5DC24CF9
+P 3025 3575
+F 0 "C6" H 3117 3621 50  0000 L CNN
+F 1 "1uF" H 3117 3530 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0603_1608Metric_Pad1.05x0.95mm_HandSolder" H 3025 3575 50  0001 C CNN
+F 3 "~" H 3025 3575 50  0001 C CNN
+	1    3025 3575
+	1    0    0    -1  
+$EndComp
+Connection ~ 3025 3475
+Wire Wire Line
+	3025 3475 3350 3475
+Wire Wire Line
+	2175 3675 2175 3775
+Wire Wire Line
+	2175 3775 2625 3775
+Connection ~ 2625 3775
+Wire Wire Line
+	2625 3775 3025 3775
+Wire Wire Line
+	3025 3775 3025 3675
+Wire Wire Line
+	1775 3475 1775 2600
+Wire Wire Line
+	1775 3475 2175 3475
+Connection ~ 1775 2600
+Wire Wire Line
+	1775 2600 2150 2600
+Wire Wire Line
+	3350 3475 3350 2600
+Connection ~ 3350 2600
+Wire Wire Line
+	3350 2600 4175 2600
+Text Notes 2800 3975 0    50   ~ 0
+Alternate LDO\nfor up to 16V input
+Wire Notes Line
+	1600 4075 1600 3150
+Wire Notes Line
+	1600 3150 3775 3150
+Wire Notes Line
+	3775 3150 3775 4075
 $EndSCHEMATC
