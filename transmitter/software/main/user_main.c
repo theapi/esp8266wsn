@@ -117,13 +117,22 @@ static void setupGPIO() {
     gpio_config(&io_conf);
 }
 
-static void readings_get(uint16_t adc[2]) {
-  gpio_set_level(PIN_MULTIPLEX_A, 0);
-  adc_read(&adc[0]);
-  // change multiplexer
-  gpio_set_level(PIN_MULTIPLEX_A, 1);
-  adc_read(&adc[1]);
-  gpio_set_level(PIN_MULTIPLEX_A, 0);
+/* Selects the ADC multiplexer channel. */
+static void multiplexer_set_channel(uint8_t chan) {
+  // Set the levels of the multiplexer channel
+  // from the bit values of the given channel number.
+  gpio_set_level(PIN_MULTIPLEX_A, (chan >> 0) & 0x01);
+  gpio_set_level(PIN_MULTIPLEX_B, (chan >> 1) & 0x01);
+  gpio_set_level(PIN_MULTIPLEX_C, (chan >> 2) & 0x01);
+}
+
+static void readings_get(uint16_t adc[PAYLOAD_ADC_NUM]) {
+  for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
+    multiplexer_set_channel(i);
+    adc_read(&adc[i]);
+    // Junk the first reading.
+    adc_read(&adc[i]);
+  }
 }
 
 esp_err_t readings_init() {
