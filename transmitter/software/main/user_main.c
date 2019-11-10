@@ -126,12 +126,25 @@ static void multiplexer_set_channel(uint8_t chan) {
   gpio_set_level(PIN_MULTIPLEX_C, (chan >> 2) & 0x01);
 }
 
+/**
+ * Mapping for hardware inputs to multplexer channels:
+ * chan 0 = input 3
+ * chan 1 = input 2
+ * chan 2 = input 1
+ * chan 3 = input 4
+ * chan 4 = input 5
+ * chan 5 = battery
+ * chan 6 = input 6
+ * chan 7 = not connected
+ */
 static void readings_get(uint16_t adc[PAYLOAD_ADC_NUM]) {
-  for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
+  uint16_t map[8] = {3, 2, 1, 4, 5, 0, 6, 7};
+  for (uint16_t i = 0; i < PAYLOAD_ADC_NUM; i++) {
     multiplexer_set_channel(i);
-    adc_read(&adc[i]);
-    // Junk the first reading.
-    adc_read(&adc[i]);
+    if (i < 8) {
+      uint16_t j = map[i];
+      adc_read(&adc[j]);
+    }
   }
 }
 
@@ -162,9 +175,9 @@ void app_espnow_data_prepare() {
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
   ESP_LOGI(TAG, "Mac: %02X:%02X:%02X:%02X:%02X:%02X",
                 buf->mac[0], buf->mac[1], buf->mac[2], buf->mac[3], buf->mac[4], buf->mac[5]);
-  ESP_LOGI(TAG, "msg_id: %d, ADC_1: %d, ADC_2: %d",
+  ESP_LOGI(TAG, "msg_id: %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
                 buf->message_id,
-                buf->adc[0], buf->adc[1]);
+                buf->adc[0], buf->adc[1], buf->adc[2], buf->adc[3], buf->adc[4], buf->adc[5], buf->adc[6]);
 }
 
 static esp_err_t app_transmit() {
