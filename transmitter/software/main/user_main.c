@@ -171,6 +171,14 @@ void app_espnow_data_prepare() {
   buf->message_id = ++msg_id;
   buf->crc = 0;
   readings_get(buf->adc);
+  /*
+    Battery id adc[0]
+    raw 668 = 4680 mV
+    so 1 = 7.005988024mV
+  */
+  uint16_t batt = buf->adc[0] * 7.0059;
+  buf->adc[0] = batt;
+
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
   ESP_LOGI(TAG, "Mac: %02X:%02X:%02X:%02X:%02X:%02X",
