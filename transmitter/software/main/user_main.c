@@ -149,7 +149,6 @@ static void readings_get(uint16_t adc[PAYLOAD_ADC_NUM]) {
   uint16_t map[8] = {4, 5, 6, 3, 2, 0, 1, 7};
   for (uint16_t i = 0; i < PAYLOAD_ADC_NUM; i++) {
     multiplexer_set_channel(i);
-    //ESP_LOGI(TAG, "chan: %d", i);
     if (i < 8) {
       uint16_t j = map[i];
       adc_read(&adc[j]);
@@ -188,8 +187,8 @@ void app_espnow_data_prepare() {
     raw 668 = 4680 mV
     so 1 = 7.005988024mV
   */
-  //uint16_t batt = buf->adc[0] * 7.0059;
-  //buf->adc[0] = batt;
+  uint16_t batt = buf->adc[0] * 7.0059;
+  buf->adc[0] = batt;
 
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
