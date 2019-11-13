@@ -15,10 +15,13 @@
 #include "driver/adc.h"
 #include "driver/gpio.h"
 
+#define PIN_SENSOR_PWR  5  // D1 (nodemcu)
 #define PIN_MULTIPLEX_A 14 // D5 (nodemcu)
 #define PIN_MULTIPLEX_B 12 // D6 (nodemcu)
 #define PIN_MULTIPLEX_C 13 // D7 (nodemcu)
-#define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) )
+#define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) | (1ULL<<PIN_SENSOR_PWR) )
+#define GPIO_INPUT_IO_0     5
+#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
 
 static const char *TAG = "transmitter";
 
@@ -115,6 +118,11 @@ static void setupGPIO() {
     io_conf.pull_up_en = 0;
     //configure GPIO with the given settings
     gpio_config(&io_conf);
+
+    // io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
+    // //set as input mode
+    // io_conf.mode = GPIO_MODE_INPUT;
+    // gpio_config(&io_conf);
 }
 
 /* Selects the ADC multiplexer channel. */
@@ -128,21 +136,23 @@ static void multiplexer_set_channel(uint8_t chan) {
 
 /**
  * Mapping for hardware inputs to multplexer channels:
- * chan 0 = input 3
- * chan 1 = input 2
- * chan 2 = input 1
- * chan 3 = input 4
- * chan 4 = input 5
+ * chan 0 = input 4
+ * chan 1 = input 5
+ * chan 2 = input 6
+ * chan 3 = input 3
+ * chan 4 = input 2
  * chan 5 = battery
- * chan 6 = input 6
+ * chan 6 = input 1
  * chan 7 = not connected
  */
 static void readings_get(uint16_t adc[PAYLOAD_ADC_NUM]) {
-  uint16_t map[8] = {3, 2, 1, 4, 5, 0, 6, 7};
+  uint16_t map[8] = {4, 5, 6, 3, 2, 0, 1, 7};
   for (uint16_t i = 0; i < PAYLOAD_ADC_NUM; i++) {
     multiplexer_set_channel(i);
+    //ESP_LOGI(TAG, "chan: %d", i);
     if (i < 8) {
       uint16_t j = map[i];
+      adc_read(&adc[j]);
       adc_read(&adc[j]);
     }
   }
@@ -155,6 +165,8 @@ esp_err_t readings_init() {
   if (adc_init(&adc_config) != ESP_OK) {
     return ESP_FAIL;
   }
+
+  gpio_set_level(PIN_SENSOR_PWR, 1);
 
   return ESP_OK;
 }
@@ -176,8 +188,8 @@ void app_espnow_data_prepare() {
     raw 668 = 4680 mV
     so 1 = 7.005988024mV
   */
-  uint16_t batt = buf->adc[0] * 7.0059;
-  buf->adc[0] = batt;
+  //uint16_t batt = buf->adc[0] * 7.0059;
+  //buf->adc[0] = batt;
 
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
