@@ -170,6 +170,15 @@ esp_err_t readings_init() {
   return ESP_OK;
 }
 
+/**
+ * Battery id adc[0]
+ * raw 668 = 4680 mV
+ * so 1 = 7.005988024mV
+ */
+static uint16_t adc2Batt(uint16_t val) {
+  return val * 7.0059;
+}
+
 /* Prepare ESPNOW data to be sent. */
 void app_espnow_data_prepare() {
   static uint8_t msg_id = 0;
@@ -182,13 +191,7 @@ void app_espnow_data_prepare() {
   buf->message_id = ++msg_id;
   buf->crc = 0;
   readings_get(buf->adc);
-  /*
-    Battery id adc[0]
-    raw 668 = 4680 mV
-    so 1 = 7.005988024mV
-  */
-  uint16_t batt = buf->adc[0] * 7.0059;
-  buf->adc[0] = batt;
+  buf->adc[0] = adc2Batt(buf->adc[0]);
 
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
@@ -216,15 +219,27 @@ static esp_err_t app_transmit() {
 }
 
 void app_main() {
+  setupGPIO();
+  if (readings_init() != ESP_OK) {
+    esp_restart();
+  }
+
+  // Check battery level before turning on the wifi.
+  multiplexer_set_channel(5);
+  uint16_t val;
+  adc_read(&val);
+  uint16_t batt = adc2Batt(val);
+  ESP_LOGI(TAG, "BATT: %d", batt);
+  if (batt < 2800) {
+    // Not enough for real work.
+    // Wait some time for the battery to charge.
+    esp_deep_sleep(4294967295); // ~71 minutes max for 32bit number.
+  }
+
   if (app_wifi_init() != ESP_OK) {
     esp_restart();
   }
   if (app_espnow_init() != ESP_OK) {
-    esp_restart();
-  }
-
-  setupGPIO();
-  if (readings_init() != ESP_OK) {
     esp_restart();
   }
 
