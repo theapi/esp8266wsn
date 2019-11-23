@@ -172,11 +172,11 @@ esp_err_t readings_init() {
 
 /**
  * Battery id adc[0]
- * raw 668 = 4680 mV
- * so 1 = 7.005988024mV
+ * raw 557 = 3913 mV (on the bsttery)
+ * so 1 = 7.02513465 mV
  */
 static uint16_t adc2Batt(uint16_t val) {
-  return val * 7.0059;
+  return val * 7.02513465;
 }
 
 /* Prepare ESPNOW data to be sent. */
@@ -191,7 +191,9 @@ void app_espnow_data_prepare() {
   buf->message_id = ++msg_id;
   buf->crc = 0;
   readings_get(buf->adc);
+  buf->adc[7] = buf->adc[0]; // Raw batt value to the unconnected adc val.
   buf->adc[0] = adc2Batt(buf->adc[0]);
+
 
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
@@ -248,13 +250,13 @@ void app_main() {
   // Deep sleep and restart after sleep.
   // Connect GPIO16 to RESET (after flashing for this to work)
   // disconnect GPIO16 to flash again.
-  esp_deep_sleep(10e6);
+  esp_deep_sleep(60e6);
 
   // // Just for dev work as I need to flash with Arduino IDE after sleep :(
   // while (1) {
   //   vTaskDelay(5000 / portTICK_RATE_MS);
   //   if (app_transmit() != ESP_OK) {
   //     esp_restart();
-  //   }
+  //     }
   // }
 }

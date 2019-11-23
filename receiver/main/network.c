@@ -122,13 +122,13 @@ static void recv_task(void *pvParameter) {
       hdisplay.pixels = payload.adc[0] / 100; // Battery decivolts for now.
       Display_update(&hdisplay);
 
-      ESP_LOGI(TAG, "Mac: " MACSTR ", type: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d, ADC_7: %d, len: %d",
+      ESP_LOGI(TAG, "Mac: " MACSTR ", type: %d, 1: %d, 2: %d, 3: %d, 4: %d, 5: %d, 6: %d, 7: %d, 9: %d, len: %d",
                 MAC2STR(event.mac_addr),
                 payload.message_type,
                 payload.adc[0], payload.adc[1],
                 payload.adc[2], payload.adc[3],
                 payload.adc[4], payload.adc[5],
-                payload.adc[6],
+                payload.adc[6], payload.adc[7],
                 event.data_len);
       // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
       // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
