@@ -119,13 +119,16 @@ static void recv_task(void *pvParameter) {
     ret = data_parse(event.data, event.data_len, &payload);
     ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
-      hdisplay.pixels = payload.message_id;
+      hdisplay.pixels = payload.adc[0] / 100; // Battery decivolts for now.
       Display_update(&hdisplay);
 
-      ESP_LOGI(TAG, "Mac: %02x:%02x:%02x:%02x:%02x:%02x, type: %d, msg_id: %d, ADC_1: %d, ADC_2: %d data from: " MACSTR ", len: %d",
-                payload.mac[0], payload.mac[1], payload.mac[2], payload.mac[3], payload.mac[4], payload.mac[5],
-                payload.message_type, payload.message_id,
-                payload.adc[0], payload.adc[1], MAC2STR(event.mac_addr),
+      ESP_LOGI(TAG, "Mac: " MACSTR ", type: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d, ADC_7: %d, len: %d",
+                MAC2STR(event.mac_addr),
+                payload.message_type,
+                payload.adc[0], payload.adc[1],
+                payload.adc[2], payload.adc[3],
+                payload.adc[4], payload.adc[5],
+                payload.adc[6],
                 event.data_len);
       // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
       // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
