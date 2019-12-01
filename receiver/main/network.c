@@ -133,9 +133,11 @@ static void recv_task(void *pvParameter) {
       //           payload.adc[4], payload.adc[5],
       //           payload.adc[6], payload.adc[7],
       //           event.data_len);
+
+      // @TODO: serialized, not strings.
       uint16_t len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
         ++count, MAC2STR(event.mac_addr), payload.adc[0], payload.adc[1]);
-      // Write data back to the UART
+      // Write data to the UART
       uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
 
     } else {
