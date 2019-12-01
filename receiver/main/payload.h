@@ -18,6 +18,11 @@ typedef struct {
   uint16_t crc;                         //CRC16 value of ESPNOW data.
 } __attribute__((packed)) PAYLOAD_sensor_t;
 
+// Creates a byte array for sending via the network.
+void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_sensor_t)]);
+
+void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_sensor_t)]);
+
 #ifdef __cplusplus
 }
 #endif

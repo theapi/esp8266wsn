@@ -17,22 +17,14 @@ unsigned int portMulti = 12345;      // local port to listen on
 
 WiFiClient espClient;
 
-esp8266wsn::Payload payload = esp8266wsn::Payload();
-uint8_t input_string[32];
+PAYLOAD_sensor_t payload = {0};
+uint8_t serial_data[32];
 uint8_t payload_state = 0;
 uint8_t current_payload;
 uint8_t serial_byte_count = 0;
-
-unsigned long message_last = 0;
-uint8_t last_msg_id = 0;
-
-unsigned long display_last = 0;
-const long display_interval = 1000;
-
+uint8_t message_id;
 const long ping_interval = 3000;
 unsigned long ping_last = 0;
-
-String ip_end;
 
 
 void setup() {
@@ -49,10 +41,6 @@ void setup() {
   }
 
   Serial.println("Ready! Listen for UDP broadcasts on 239.0.0.58 port 12345");
-
-  String ip = WiFi.localIP().toString();
-  ip_end = ip.substring(ip.lastIndexOf('.'));
-
 }
 
 void loop() {
@@ -76,16 +64,18 @@ void loop() {
 
       //Serial.print(in, HEX);
       // add it to the inputString:
-      input_string[serial_byte_count] = in;
+      serial_data[serial_byte_count] = in;
       ++serial_byte_count;
 
       // if the the last byte is received, set a flag
       // so the main loop can do something about it:
       if (current_payload == 200) {
-        if (serial_byte_count == payload.size()) {
+        if (serial_byte_count == sizeof(PAYLOAD_sensor_t)) {
             serial_byte_count = 0;
             payload_state = 2;
-            payload.unserialize(input_string);
+            PAYLOAD_unserialize(&payload, serial_data);
+            // Generate message id as it will always be 0 from the sensor.
+            payload.message_id = message_id++;
           }
       }
     } else {
@@ -117,15 +107,20 @@ void loop() {
 
 void serialPrintPayload() {
   Serial.print("Payload: ");
-  Serial.print(payload.getMsgType()); Serial.print(", ");
-  Serial.print(payload.getDeviceId()); Serial.print(", ");
-  Serial.print(payload.getMsgId()); Serial.print(", ");
-  Serial.print(payload.getBatt()); Serial.print(", ");
-  Serial.print(payload.getVal(0)); Serial.print(", ");
-  Serial.print(payload.getVal(1)); Serial.print(", ");
-  Serial.print(payload.getVal(2)); Serial.print(", ");
-  Serial.print(payload.getVal(3)); Serial.print(", ");
-  Serial.print(payload.getVal(4)); Serial.print(", ");
+  Serial.print(payload.message_type); Serial.print(", ");
+  Serial.print(payload.message_id); Serial.print(", ");
+  for (int i = 0; i < 6; i++) {
+    Serial.print(payload.mac[i], HEX);
+    if (i < 5) {
+      Serial.print(":");
+    }
+  }
+  Serial.print(", ");
+  for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
+    Serial.print(payload.mac[i], HEX);
+    Serial.print(", ");
+  }
+
   Serial.println();
 }
 
@@ -134,9 +129,9 @@ void udpBroadcastPayload() {
   Udp.write('\t'); // Payload start byte
 
   // Send the contents of the buffer.
-  size_t len = sizeof(payload);
+  size_t len = sizeof(PAYLOAD_sensor_t);
   uint8_t sbuf[len];
-  payload.serialize(sbuf);
+  PAYLOAD_serialize(&payload, sbuf);
   Udp.write(sbuf, len);
 
   Udp.write('\n');
