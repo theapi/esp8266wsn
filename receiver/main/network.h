@@ -8,6 +8,8 @@ extern "C" {
 #include "esp_system.h"
 #include "payload.h"
 
+
+#define UART_BUF_SIZE (1024)
 #define ESPNOW_QUEUE_SIZE 6
 
 /* When ESPNOW receiving callback function is called. */

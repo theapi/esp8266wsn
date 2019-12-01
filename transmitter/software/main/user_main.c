@@ -250,7 +250,7 @@ void app_main() {
   // Deep sleep and restart after sleep.
   // Connect GPIO16 to RESET (after flashing for this to work)
   // disconnect GPIO16 to flash again.
-  esp_deep_sleep(60e6);
+  esp_deep_sleep(10e6);
 
   // // Just for dev work as I need to flash with Arduino IDE after sleep :(
   // while (1) {

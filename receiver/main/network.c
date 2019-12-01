@@ -15,11 +15,16 @@
 #include "esp_system.h"
 #include "esp_wifi.h"
 
+#include "driver/uart.h"
+
 #include "crc.h"
 #include "display.h"
 
 static const char *TAG = "network";
 static xQueueHandle recv_queue;
+
+char uart_buffer[UART_BUF_SIZE];
+uint16_t count = 0;
 
 /* WiFi should start before using ESPNOW */
 static esp_err_t wifi_init(void)
@@ -91,8 +96,6 @@ static int data_parse(uint8_t *data, uint16_t data_len,
   memcpy(payload->mac, buf->mac, sizeof(payload->mac));
   payload->message_type = buf->message_type;
   payload->message_id = buf->message_id;
-  ESP_LOGI(TAG, "ADC 0:%d", buf->adc[0]);
-  ESP_LOGI(TAG, "ADC 1:%d", buf->adc[1]);
   memcpy(payload->adc, buf->adc, sizeof(payload->adc));
 
   crc = buf->crc;
@@ -111,30 +114,29 @@ static void recv_task(void *pvParameter) {
   int ret;
 
   vTaskDelay(100 / portTICK_RATE_MS);
-  ESP_LOGI(TAG, "Start listening for broadcast data");
+  //ESP_LOGI(TAG, "Start listening for broadcast data");
 
   while (xQueueReceive(recv_queue, &event, portMAX_DELAY) == pdTRUE) {
     PAYLOAD_sensor_t payload;
 
     ret = data_parse(event.data, event.data_len, &payload);
-    ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
+    // ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
       hdisplay.pixels = payload.adc[0] / 100; // Battery decivolts for now.
       Display_update(&hdisplay);
 
-      ESP_LOGI(TAG, "Mac: " MACSTR ", type: %d, 1: %d, 2: %d, 3: %d, 4: %d, 5: %d, 6: %d, 7: %d, 9: %d, len: %d",
-                MAC2STR(event.mac_addr),
-                payload.message_type,
-                payload.adc[0], payload.adc[1],
-                payload.adc[2], payload.adc[3],
-                payload.adc[4], payload.adc[5],
-                payload.adc[6], payload.adc[7],
-                event.data_len);
-      // uint16_t len = sprintf(uart_buffer, "%d - broadcast data from:
-      // "MACSTR", len: %d\n", ++count, MAC2STR(recv_cb->mac_addr),
-      // recv_cb->data_len);
-      // // Write data back to the UART
-      // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
+      // ESP_LOGI(TAG, "Mac: " MACSTR ", type: %d, 1: %d, 2: %d, 3: %d, 4: %d, 5: %d, 6: %d, 7: %d, 9: %d, len: %d",
+      //           MAC2STR(event.mac_addr),
+      //           payload.message_type,
+      //           payload.adc[0], payload.adc[1],
+      //           payload.adc[2], payload.adc[3],
+      //           payload.adc[4], payload.adc[5],
+      //           payload.adc[6], payload.adc[7],
+      //           event.data_len);
+      uint16_t len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
+        ++count, MAC2STR(event.mac_addr), payload.adc[0], payload.adc[1]);
+      // Write data back to the UART
+      uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
 
     } else {
       ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
