@@ -27,7 +27,6 @@ void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOA
   payload->message_id = buffer[b++];
 
   /* Do the mac address */
-
   for (int i = 0; i < 6; i++) {
     payload->mac[i] = buffer[b++];
   }

@@ -117,7 +117,7 @@ void serialPrintPayload() {
   }
   Serial.print(", ");
   for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
-    Serial.print(payload.mac[i], HEX);
+    Serial.print(payload.mac[i]);
     Serial.print(", ");
   }
 
