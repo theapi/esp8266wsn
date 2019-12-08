@@ -122,6 +122,7 @@ static void recv_task(void *pvParameter) {
     ret = data_parse(event.data, event.data_len, &payload);
     // ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
+      payload.message_id = ++count;
       hdisplay.pixels = payload.adc[0] / 100; // Battery decivolts for now.
       Display_update(&hdisplay);
 
@@ -134,11 +135,26 @@ static void recv_task(void *pvParameter) {
       //           payload.adc[6], payload.adc[7],
       //           event.data_len);
 
-      // @TODO: serialized, not strings.
-      uint16_t len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
-        ++count, MAC2STR(event.mac_addr), payload.adc[0], payload.adc[1]);
+      // Debug output.
+      // uint16_t slen = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
+      //   payload.message_id, MAC2STR(event.mac_addr), payload.adc[0], payload.adc[1]);
+      // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, slen);
+
+      // Send the serialized data through the UART.
+      size_t len = sizeof(PAYLOAD_sensor_t);
+      uint8_t sbuf[len];
+      PAYLOAD_serialize(&payload, sbuf);
       // Write data to the UART
-      uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, len);
+      uart_write_bytes(UART_NUM_0, (const char *) "\t", 1);
+      uart_write_bytes(UART_NUM_0, (const char *) sbuf, len);
+      uart_write_bytes(UART_NUM_0, (const char *) "\n", 1);
+
+      // Debug output, to prove the serialization is correct.
+      PAYLOAD_sensor_t debug;
+      PAYLOAD_unserialize(&debug, sbuf);
+      uint16_t debug_len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
+        debug.message_id, MAC2STR(event.mac_addr), debug.adc[0], debug.adc[1]);
+      uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, debug_len);
 
     } else {
       ESP_LOGI(TAG, "Receive error data from: " MACSTR "",
