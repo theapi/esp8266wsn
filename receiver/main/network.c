@@ -126,15 +126,6 @@ static void recv_task(void *pvParameter) {
       hdisplay.pixels = payload.adc[0] / 100; // Battery decivolts for now.
       Display_update(&hdisplay);
 
-      // ESP_LOGI(TAG, "Mac: " MACSTR ", type: %d, 1: %d, 2: %d, 3: %d, 4: %d, 5: %d, 6: %d, 7: %d, 9: %d, len: %d",
-      //           MAC2STR(event.mac_addr),
-      //           payload.message_type,
-      //           payload.adc[0], payload.adc[1],
-      //           payload.adc[2], payload.adc[3],
-      //           payload.adc[4], payload.adc[5],
-      //           payload.adc[6], payload.adc[7],
-      //           event.data_len);
-
       // Debug output.
       // uint16_t slen = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
       //   payload.message_id, MAC2STR(event.mac_addr), payload.adc[0], payload.adc[1]);
@@ -143,18 +134,24 @@ static void recv_task(void *pvParameter) {
       // Send the serialized data through the UART.
       size_t len = sizeof(PAYLOAD_sensor_t);
       uint8_t sbuf[len];
+      uint8_t tx_start[1] = {0xAA};
+      uint8_t tx_len[1] = {len};
       PAYLOAD_serialize(&payload, sbuf);
-      // Write data to the UART
-      uart_write_bytes(UART_NUM_0, (const char *) "\t", 1);
-      uart_write_bytes(UART_NUM_0, (const char *) sbuf, len);
-      uart_write_bytes(UART_NUM_0, (const char *) "\n", 1);
 
-      // Debug output, to prove the serialization is correct.
-      PAYLOAD_sensor_t debug;
-      PAYLOAD_unserialize(&debug, sbuf);
-      uint16_t debug_len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
-        debug.message_id, MAC2STR(event.mac_addr), debug.adc[0], debug.adc[1]);
-      uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, debug_len);
+      // Write the tx header, so the other end of the UART
+      // knows a payload is coming and how long it is.
+      uart_write_bytes(UART_NUM_0, (const char *) tx_start, 1);
+      uart_write_bytes(UART_NUM_0, (const char *) tx_len, 1);
+      uart_write_bytes(UART_NUM_0, (const char *) tx_start, 1);
+      // Write payload to the UART
+      uart_write_bytes(UART_NUM_0, (const char *) sbuf, len);
+
+      // // Debug output, to prove the serialization is correct.
+      // PAYLOAD_sensor_t debug;
+      // PAYLOAD_unserialize(&debug, sbuf);
+      // uint16_t debug_len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
+      //   debug.message_id, MAC2STR(event.mac_addr), debug.adc[0], debug.adc[1]);
+      // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, debug_len);
 
     } else {
       ESP_LOGI(TAG, "Receive error data from: " MACSTR "",

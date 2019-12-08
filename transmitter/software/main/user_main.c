@@ -257,6 +257,6 @@ void app_main() {
   //   vTaskDelay(5000 / portTICK_RATE_MS);
   //   if (app_transmit() != ESP_OK) {
   //     esp_restart();
-  //     }
+  //   }
   // }
 }

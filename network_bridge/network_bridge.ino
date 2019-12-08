@@ -5,7 +5,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include "config.h"
-#include "payload.h"
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
@@ -17,15 +16,20 @@ unsigned int portMulti = 12345;      // local port to listen on
 
 WiFiClient espClient;
 
-PAYLOAD_sensor_t payload = {0};
-uint8_t serial_data[32];
-uint8_t payload_state = 0;
-uint8_t current_payload;
-uint8_t serial_byte_count = 0;
-uint8_t message_id;
+uint8_t rx_buffer[256];
+uint8_t rx_buffer_index = 0;
+uint8_t payload_length = 0;
 const long ping_interval = 3000;
 unsigned long ping_last = 0;
 
+enum State {
+  ST_WAITING,
+  ST_LENGTH,
+  ST_HEADER_VALIDATION,
+  ST_DATA,
+  ST_READY
+};
+State payload_state = ST_WAITING;
 
 void setup() {
   Serial.begin(115200);
@@ -40,87 +44,17 @@ void setup() {
     while(1) delay(500);
   }
 
+  Serial.println(WiFi.localIP().toString());
   Serial.println("Ready! Listen for UDP broadcasts on 239.0.0.58 port 12345");
 }
 
-void loop() {
-  // Read the data from the receiver.
-  while (Serial.available()) {
-    // get the new byte:
-    uint8_t in = (uint8_t) Serial.read();
-    //Serial.println(in, HEX);
-
-    if (payload_state == 0) {
-      // Check for the start of the payload
-      if (in == '\t') {
-        payload_state = 1;
-      }
-    } else if (payload_state == 1) {
-
-      // Check the first byte for the payload type.
-      if (serial_byte_count == 0) {
-        current_payload = in;
-      }
-
-      //Serial.print(in, HEX);
-      // add it to the inputString:
-      serial_data[serial_byte_count] = in;
-      ++serial_byte_count;
-
-      // if the the last byte is received, set a flag
-      // so the main loop can do something about it:
-      if (current_payload == 200) {
-        if (serial_byte_count == sizeof(PAYLOAD_sensor_t)) {
-            serial_byte_count = 0;
-            payload_state = 2;
-            PAYLOAD_unserialize(&payload, serial_data);
-            // Generate message id as it will always be 0 from the sensor.
-            payload.message_id = message_id++;
-          }
-      }
-    } else {
-      // Passthru other serial messages.
-      Serial.print(char(in));
-    }
-  }
-
-  unsigned long currentMillis = millis();
-
-  // Send payload to listeners when ready.
-  if (payload_state == 2) {
-    payload_state = 0;
-
-    // No need to ping if we're sending real data.
-    ping_last = currentMillis;
-    udpBroadcastPayload();
-    serialPrintPayload();
-
-    current_payload = 0;
-  }
-  // Send the data continually, as its UDP some may get missed.
-  else if (currentMillis - ping_last >= ping_interval) {
-    ping_last = currentMillis;
-    udpBroadcastPayload();
-  }
-
-}
 
 void serialPrintPayload() {
-  Serial.print("Payload: ");
-  Serial.print(payload.message_type); Serial.print(", ");
-  Serial.print(payload.message_id); Serial.print(", ");
-  for (int i = 0; i < 6; i++) {
-    Serial.print(payload.mac[i], HEX);
-    if (i < 5) {
-      Serial.print(":");
-    }
+  Serial.println("Payload: ");
+  for (int i = 0; i < payload_length; i++) {
+    Serial.print(rx_buffer[i], HEX);
+    Serial.print(" ");
   }
-  Serial.print(", ");
-  for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
-    Serial.print(payload.mac[i]);
-    Serial.print(", ");
-  }
-
   Serial.println();
 }
 
@@ -129,13 +63,81 @@ void udpBroadcastPayload() {
   Udp.write('\t'); // Payload start byte
 
   // Send the contents of the buffer.
-  size_t len = sizeof(PAYLOAD_sensor_t);
-  uint8_t sbuf[len];
-  PAYLOAD_serialize(&payload, sbuf);
-  Udp.write(sbuf, len);
+  Udp.write(rx_buffer, payload_length);
 
   Udp.write('\n');
   Udp.endPacket();
   Udp.stop();
+}
+
+
+void loop() {
+  // Read the data from the receiver.
+  while (Serial.available()) {
+    // get the new byte:
+    uint8_t c = (uint8_t) Serial.read();
+    //Serial.println(c, HEX);
+
+    switch (payload_state) {
+      case ST_WAITING:
+        // Wait for the payload header.
+        if (c == 0xAA) {
+          rx_buffer_index = 0;
+          payload_state = ST_LENGTH;
+        } else {
+          // Passthru other serial messages.
+          Serial.print(char(c));
+        }
+        break;
+        
+      case ST_LENGTH:
+        payload_length = c;
+        payload_state = ST_HEADER_VALIDATION;
+        break;
+        
+      case ST_HEADER_VALIDATION:
+        // Next byte is the end of the header.
+        if (c == 0xAA) {
+          // Clear the rx buffer, ready for new data.
+          memset(rx_buffer, 0, payload_length);
+          payload_state = ST_DATA;
+        } else {
+          // Not a real header, so start again.
+          payload_state = ST_WAITING;
+        }
+        break;
+        
+      case ST_DATA:
+        rx_buffer[rx_buffer_index++] = c;
+        if (rx_buffer_index == payload_length) {
+          payload_state = ST_READY;
+        }
+        break;
+
+      case ST_READY:
+        // Buffer ready for processing.
+        break;
+    }
+  }
+
+  unsigned long currentMillis = millis();
+
+  // Send payload to listeners when ready.
+  if (payload_state == ST_READY) {
+    // No need to ping if we're sending real data.
+    ping_last = currentMillis;
+    udpBroadcastPayload();
+    serialPrintPayload();
+
+    // Ready for the next payload.
+    payload_state = ST_WAITING;
+  }
+  // Send the data continually, as its UDP some may get missed.
+  // Only send if not currently processing incoming data.
+  else if ( (payload_state == ST_WAITING) && (currentMillis - ping_last >= ping_interval) ) {
+    ping_last = currentMillis;
+    udpBroadcastPayload();
+  }
+  
 }
 
