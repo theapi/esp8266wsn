@@ -1,7 +1,9 @@
 
 #include "payload.h"
+#include <string.h>
 
 void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_sensor_t)]) {
+  memset(buffer, 0, sizeof(PAYLOAD_sensor_t));
   int b = 0;
   buffer[b++] = payload->message_type;
   buffer[b++] = payload->message_id;
@@ -13,7 +15,7 @@ void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_
 
   /* Do the adc values. */
   for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
-    if (b > sizeof(payload)) {
+    if (b > sizeof(PAYLOAD_sensor_t)) {
       return;
     }
     buffer[b++] = (payload->adc[i] >> 8);
@@ -33,7 +35,7 @@ void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOA
 
   /* Do the adc values. */
   for (int i = 0; i < PAYLOAD_ADC_NUM; i++) {
-    if (b > sizeof(payload)) {
+    if (b > sizeof(PAYLOAD_sensor_t)) {
       return;
     }
     payload->adc[i] = (buffer[b++] << 8);
