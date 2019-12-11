@@ -37,14 +37,15 @@ void app_main(void) {
     esp_restart();
   }
 
-  if (Network_start() != ESP_OK) {
-    esp_restart();
-  }
-
   if (Light_start() != ESP_OK) {
     esp_restart();
   }
 
   hdisplay.pixels = 0x1FF;
   Display_update(&hdisplay);
+
+  if (Network_start() != ESP_OK) {
+    esp_restart();
+  }
+
 }

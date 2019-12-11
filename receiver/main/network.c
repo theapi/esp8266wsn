@@ -19,6 +19,7 @@
 
 #include "crc.h"
 #include "display.h"
+#include "display_payload.h"
 
 static const char *TAG = "network";
 static xQueueHandle recv_queue;
@@ -113,7 +114,9 @@ static void recv_task(void *pvParameter) {
   NETWORK_event_t event;
   int ret;
 
-  vTaskDelay(100 / portTICK_RATE_MS);
+  vTaskDelay(500 / portTICK_RATE_MS);
+  hdisplay.pixels = 0x0;
+  Display_update(&hdisplay);
   //ESP_LOGI(TAG, "Start listening for broadcast data");
 
   while (xQueueReceive(recv_queue, &event, portMAX_DELAY) == pdTRUE) {
@@ -123,8 +126,7 @@ static void recv_task(void *pvParameter) {
     // ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
     if (ret == ESP_OK) {
       payload.message_id = ++count;
-      hdisplay.pixels = payload.adc[0] / 100; // Battery decivolts for now.
-      Display_update(&hdisplay);
+      DisplayPayload_show(&payload);
 
       // Debug output.
       // uint16_t slen = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",

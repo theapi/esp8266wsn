@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 #include "esp_system.h"
+#include "payload.h"
 
 #define DISPLAY_PIN_BLUE 4 // D2 on NodeMCU
 
