@@ -6,6 +6,8 @@ extern "C" {
 
 #include "payload.h"
 
+#define DP_SENSOR_TIMEOUT 12000 // milli seconds
+
 #define DP_WATER_THRESHOLD 900
 #define DP_BATTERY_THRESHOLD 3200
 #define DP_NUM_SENSORS 3
@@ -15,6 +17,7 @@ extern "C" {
 #define DP_BLUE 0x04
 
 void DisplayPayload_show(PAYLOAD_sensor_t *payload);
+esp_err_t DisplayPayload_start();
 
 #ifdef __cplusplus
 }

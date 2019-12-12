@@ -10,6 +10,7 @@
 #include "payload.h"
 #include "network.h"
 #include "light.h"
+#include "display_payload.h"
 
 //static const char *TAG = "receiver";
 
@@ -43,6 +44,10 @@ void app_main(void) {
 
   hdisplay.pixels = 0x1FF;
   Display_update(&hdisplay);
+
+  if (DisplayPayload_start() != ESP_OK) {
+    esp_restart();
+  }
 
   if (Network_start() != ESP_OK) {
     esp_restart();
