@@ -59,45 +59,27 @@ void DisplayPayload_show(PAYLOAD_sensor_t *payload) {
   // Blue = needs water
   // Green = all is well
 
-  // Displays for 3 multi input sensors.
-  // 1st led is for the first sensor.
-  // xxxx xxxR GBRG BRGB
-
-
   uint8_t sensor = sensorNum(payload);
   ESP_LOGI(TAG, "Sensor: %d", sensor);
 
-  // @todo handle multiple sensors cleaner
   // @todo clear a sensor's led if not heard from for a while.
-  if (sensor == 0) {
-    // Clear the bits for sensor 1
-    hdisplay.pixels &= ~(0x07);
-    if (needsBattery(payload) == 1) {
-      // Set the first bit (red) for sensor 1
-      hdisplay.pixels |= 0x01;
-    } else if (needsWater(payload) == 1) {
-      // Set the 3rd bit (blue) for sensor 1
-      hdisplay.pixels |= 0x04;
-    } else {
-      // Set the 2nd bit (green) for sensor 1
-      hdisplay.pixels |= 0x02;
-    }
-    Display_update(&hdisplay);
-  }
 
-  if (sensor == 1) {
-    // Clear the bits
-    hdisplay.pixels &= ~(0x38);
-    if (needsBattery(payload) == 1) {
-      // Set the first bit (red)
-      hdisplay.pixels |= 0x08;
-    } else if (needsWater(payload) == 1) {
-      // Set the 3rd bit (blue)
-      hdisplay.pixels |= 0x20;
-    } else {
-      // Set the 2nd bit (green)
-      hdisplay.pixels |= 0x10;
-    }
-    Display_update(&hdisplay);
+  // Displays for 3 multi input sensors.
+  // 1st led is for the first sensor.
+  // xxxx xxxR GBRG BRGB
+  uint16_t red = (DP_RED << sensor * 3);
+  uint16_t green = (DP_GREEN << sensor * 3);
+  uint16_t blue = (DP_BLUE << sensor * 3);
+  uint16_t clear = ~(red | green | blue);
+
+  // Clear the led bits for the sensor.
+  hdisplay.pixels &= clear;
+  if (needsBattery(payload) == 1) {
+    hdisplay.pixels |= red;
+  } else if (needsWater(payload) == 1) {
+    hdisplay.pixels |= blue;
+  } else {
+    hdisplay.pixels |= green;
   }
+  Display_update(&hdisplay);
 }

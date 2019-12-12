@@ -10,6 +10,10 @@ extern "C" {
 #define DP_BATTERY_THRESHOLD 3200
 #define DP_NUM_SENSORS 3
 
+#define DP_RED 0x01
+#define DP_GREEN 0x02
+#define DP_BLUE 0x04
+
 void DisplayPayload_show(PAYLOAD_sensor_t *payload);
 
 #ifdef __cplusplus
