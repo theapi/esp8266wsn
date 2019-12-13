@@ -98,6 +98,8 @@ static int data_parse(uint8_t *data, uint16_t data_len,
   payload->message_type = buf->message_type;
   payload->message_id = buf->message_id;
   memcpy(payload->adc, buf->adc, sizeof(payload->adc));
+  payload->batt = buf->batt;
+  payload->delay = buf->delay;
 
   crc = buf->crc;
   buf->crc = 0;
@@ -128,9 +130,9 @@ static void recv_task(void *pvParameter) {
       payload.message_id = ++count;
       DisplayPayload_show(&payload);
 
-      // Debug output.
-      // uint16_t slen = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
-      //   payload.message_id, MAC2STR(event.mac_addr), payload.adc[0], payload.adc[1]);
+      // // Debug output.
+      // uint16_t slen = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d, delay: %d\n",
+      //   payload.message_id, MAC2STR(event.mac_addr), payload.batt, payload.adc[1], payload.delay);
       // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, slen);
 
       // Send the serialized data through the UART.
@@ -151,8 +153,8 @@ static void recv_task(void *pvParameter) {
       // // Debug output, to prove the serialization is correct.
       // PAYLOAD_sensor_t debug;
       // PAYLOAD_unserialize(&debug, sbuf);
-      // uint16_t debug_len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d\n",
-      //   debug.message_id, MAC2STR(event.mac_addr), debug.adc[0], debug.adc[1]);
+      // uint16_t debug_len = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d, delay: %d\n",
+      //   debug.message_id, MAC2STR(event.mac_addr), debug.batt, debug.adc[1], debug.delay);
       // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, debug_len);
 
     } else {

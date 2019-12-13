@@ -41,7 +41,7 @@ static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
 }
 
 static char needsBattery(PAYLOAD_sensor_t *payload) {
-  if (payload->adc[0] < DP_BATTERY_THRESHOLD) {
+  if (payload->batt < DP_BATTERY_THRESHOLD) {
     return 1;
   }
   return 0;

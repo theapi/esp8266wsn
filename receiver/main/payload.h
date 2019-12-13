@@ -14,8 +14,10 @@ typedef struct {
   uint8_t message_type;
   uint8_t message_id;
   uint8_t mac[6];
-  uint16_t adc[PAYLOAD_ADC_NUM];        //ADC readings
-  uint16_t crc;                         //CRC16 value of ESPNOW data.
+  uint16_t adc[PAYLOAD_ADC_NUM]; //ADC readings
+  uint16_t batt;                 // Battery in mV
+  uint16_t delay;                // Seconds between transmisions
+  uint16_t crc;                  //CRC16 value of ESPNOW data.
 } __attribute__((packed)) PAYLOAD_sensor_t;
 
 // Creates a byte array for sending via the network.

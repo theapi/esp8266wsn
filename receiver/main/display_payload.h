@@ -9,7 +9,7 @@ extern "C" {
 #define DP_SENSOR_TIMEOUT 12000 // milli seconds
 
 #define DP_WATER_THRESHOLD 900
-#define DP_BATTERY_THRESHOLD 3200
+#define DP_BATTERY_THRESHOLD 3600
 #define DP_NUM_SENSORS 3
 
 #define DP_RED 0x01

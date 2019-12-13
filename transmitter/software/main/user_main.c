@@ -22,6 +22,7 @@
 #define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) | (1ULL<<PIN_SENSOR_PWR) )
 #define GPIO_INPUT_IO_0     5
 #define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
+#define DELAY_SECONDS 10
 
 static const char *TAG = "transmitter";
 
@@ -192,15 +193,15 @@ void app_espnow_data_prepare() {
   buf->crc = 0;
   readings_get(buf->adc);
   buf->adc[7] = buf->adc[0]; // Raw batt value to the unconnected adc val.
-  buf->adc[0] = adc2Batt(buf->adc[0]);
-
+  buf->batt = adc2Batt(buf->adc[0]);
+  buf->delay = DELAY_SECONDS;
 
   buf->crc =
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
   ESP_LOGI(TAG, "Mac: %02X:%02X:%02X:%02X:%02X:%02X",
                 buf->mac[0], buf->mac[1], buf->mac[2], buf->mac[3], buf->mac[4], buf->mac[5]);
-  ESP_LOGI(TAG, "msg_id: %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
-                buf->message_id,
+  ESP_LOGI(TAG, "msg_id: %d, BATT: %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
+                buf->message_id, buf->batt,
                 buf->adc[0], buf->adc[1], buf->adc[2], buf->adc[3], buf->adc[4], buf->adc[5], buf->adc[6]);
 }
 
@@ -250,11 +251,11 @@ void app_main() {
   // Deep sleep and restart after sleep.
   // Connect GPIO16 to RESET (after flashing for this to work)
   // disconnect GPIO16 to flash again.
-  esp_deep_sleep(10e6);
+  esp_deep_sleep(DELAY_SECONDS * 1000000);
 
   // // Just for dev work as I need to flash with Arduino IDE after sleep :(
   // while (1) {
-  //   vTaskDelay(5000 / portTICK_RATE_MS);
+  //   vTaskDelay(DELAY_SECONDS * 1000 / portTICK_RATE_MS);
   //   if (app_transmit() != ESP_OK) {
   //     esp_restart();
   //   }

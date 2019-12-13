@@ -5,12 +5,13 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "~/esp/ESP8266_RTOS_SDK/components/**",
-                "build/include"
+                "build/include",
+                "/usr/include/x86_64-linux-gnu"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
             "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x86",
+            "intelliSenseMode": "gcc-x64",
             "defines": []
         }
     ],

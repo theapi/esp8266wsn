@@ -21,6 +21,11 @@ void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_
     buffer[b++] = (payload->adc[i] >> 8);
     buffer[b++] = payload->adc[i];
   }
+
+  buffer[b++] = (payload->batt >> 8);
+  buffer[b++] = payload->batt;
+  buffer[b++] = (payload->delay >> 8);
+  buffer[b++] = payload->delay;
 }
 
 void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_sensor_t)]) {
@@ -41,4 +46,10 @@ void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOA
     payload->adc[i] = (buffer[b++] << 8);
     payload->adc[i] |= buffer[b++];
   }
+
+  payload->batt = (buffer[b++] << 8);
+  payload->batt |= buffer[b++];
+
+  payload->delay = (buffer[b++] << 8);
+  payload->delay |= buffer[b++];
 }
