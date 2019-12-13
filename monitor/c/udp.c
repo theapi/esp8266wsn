@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 
 #define SERVER_PORT 12345
-#define SERVER_GROUP "239.0.0.57"
+#define SERVER_GROUP "239.0.0.58"
 #define MSGBUFSIZE 64
 
 static void printArray(const uint8_t *string, int size) {
