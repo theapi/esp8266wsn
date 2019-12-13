@@ -6,8 +6,7 @@ extern "C" {
 
 #include "payload.h"
 
-#define DP_SENSOR_TIMEOUT 12000 // milli seconds
-
+#define DP_DELAY_EXTRA 5 // Number of seconds extra to wait to hear from the sensor again.
 #define DP_WATER_THRESHOLD 900
 #define DP_BATTERY_THRESHOLD 3600
 #define DP_NUM_SENSORS 3

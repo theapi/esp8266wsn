@@ -9,14 +9,15 @@
 #include "display.h"
 #include "payload.h"
 
-#include "esp_log.h"
+//#include "esp_log.h"
 #include "esp_timer.h"
 
-static const char *TAG = "DP";
+// static const char *TAG = "DP";
 
 // Identified by their mac address: 5ccf7f80dfd2
 static char sensors[DP_NUM_SENSORS][13] = { "", "", "" };
 static int32_t sensors_last[DP_NUM_SENSORS] = {};
+static int32_t sensors_delay[DP_NUM_SENSORS] = {};
 
 static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
   char mac[13];
@@ -24,7 +25,9 @@ static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
     payload->mac[0], payload->mac[1], payload->mac[2], payload->mac[3], payload->mac[4], payload->mac[5]);
   for (uint8_t i = 0; i < DP_NUM_SENSORS; i++) {
     if (strcmp(mac, sensors[i]) == 0) {
-      ESP_LOGI(TAG, "Found: %s", mac);
+      //ESP_LOGI(TAG, "Found: %s", mac);
+      // Update the delay in case it changed.
+      sensors_delay[i] = payload->delay;
       return i;
     }
   }
@@ -33,6 +36,7 @@ static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
   for (uint8_t i = 0; i < DP_NUM_SENSORS; i++) {
     if (strcmp("", sensors[i]) == 0) {
       strcpy(sensors[i], mac);
+      sensors_delay[i] = payload->delay;
       return i;
     }
   }
@@ -66,7 +70,6 @@ void DisplayPayload_show(PAYLOAD_sensor_t *payload) {
   // Green = all is well
 
   int8_t sensor = sensorNum(payload);
-  // ESP_LOGI(TAG, "Sensor: %d", sensor);
   if (sensor == -1) {
     // Couldn't assign an led to the sensor, so do notihng.
     return;
@@ -111,12 +114,11 @@ static void sensorClear(int8_t sensor) {
 static void clearTask(void *pvParameters)
 {
     while(1) {
-        vTaskDelay(2000 / portTICK_RATE_MS);
+        vTaskDelay(500 / portTICK_RATE_MS);
         int32_t now = (int32_t) (esp_timer_get_time() / 1000);
-        // ESP_LOGI(TAG, "now: %d", now);
         for (uint8_t i = 0; i < DP_NUM_SENSORS; i++) {
-          //ESP_LOGI(TAG, "sensors_last: %d", sensors_last[i]);
-          if (now - sensors_last[i] > DP_SENSOR_TIMEOUT) {
+          // If longer than the delay time clear the led for that sensor.
+          if (now - sensors_last[i] > (sensors_delay[i] + DP_DELAY_EXTRA) * 1000) {
             sensorClear(i);
           }
         }
