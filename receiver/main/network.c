@@ -119,7 +119,7 @@ static void recv_task(void *pvParameter) {
   vTaskDelay(500 / portTICK_RATE_MS);
   hdisplay.pixels = 0x0;
   Display_update(&hdisplay);
-  //ESP_LOGI(TAG, "Start listening for broadcast data");
+  ESP_LOGI(TAG, "Start listening for broadcast data");
 
   while (xQueueReceive(recv_queue, &event, portMAX_DELAY) == pdTRUE) {
     PAYLOAD_sensor_t payload;

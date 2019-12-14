@@ -1,6 +1,4 @@
 
-#include <string.h>
-
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/timers.h"
@@ -9,23 +7,35 @@
 #include "display.h"
 #include "payload.h"
 
-//#include "esp_log.h"
+#include "esp_log.h"
 #include "esp_timer.h"
 
-// static const char *TAG = "DP";
+static const char *TAG = "DP";
 
 // Identified by their mac address: 5ccf7f80dfd2
-static char sensors[DP_NUM_SENSORS][13] = { "", "", "" };
+static uint8_t sensors[DP_NUM_SENSORS][6] = {};
 static int32_t sensors_last[DP_NUM_SENSORS] = {};
 static int32_t sensors_delay[DP_NUM_SENSORS] = {};
 
+/**
+ * Compares mac addresses.
+ *
+ * returns zero if they are “equal”
+ * see https://www.gnu.org/software/libc/manual/html_node/Comparison-Functions.html
+ *
+ */
+static int8_t compareMacs(uint8_t a[6], uint8_t b[6]) {
+  for (int i = 0; i < 6; i++) {
+    if (a[i] != b[i]) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
-  char mac[13];
-  sprintf(mac, "%02x%02x%02x%02x%02x%02x",
-    payload->mac[0], payload->mac[1], payload->mac[2], payload->mac[3], payload->mac[4], payload->mac[5]);
   for (uint8_t i = 0; i < DP_NUM_SENSORS; i++) {
-    if (strcmp(mac, sensors[i]) == 0) {
-      //ESP_LOGI(TAG, "Found: %s", mac);
+    if (compareMacs(sensors[i], payload->mac) == 0) {
       // Update the delay in case it changed.
       sensors_delay[i] = payload->delay;
       return i;
@@ -34,9 +44,15 @@ static int8_t sensorNum(PAYLOAD_sensor_t *payload) {
 
   // Not seen before, so add it to the array.
   for (uint8_t i = 0; i < DP_NUM_SENSORS; i++) {
-    if (strcmp("", sensors[i]) == 0) {
-      strcpy(sensors[i], mac);
+    if (sensors[i][0] == 0) {
+      //memcpy(payload->mac, sensors[i], 6); // doesn't work here
+      for (uint8_t x = 0; x < 6; x++) {
+        sensors[i][x] = payload->mac[x];
+      }
       sensors_delay[i] = payload->delay;
+      ESP_LOGI(TAG, "Added: %d - %02x %02x %02x %02x %02x %02x", i,
+               sensors[i][0], sensors[i][1], sensors[i][2], sensors[i][3],
+               sensors[i][4], sensors[i][5]);
       return i;
     }
   }
