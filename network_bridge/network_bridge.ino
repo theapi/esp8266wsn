@@ -22,7 +22,7 @@ WiFiClient espClient;
 uint8_t rx_buffer[RX_BUFFER_SIZE];
 uint8_t rx_buffer_index = 0;
 uint8_t payload_length = 0;
-const long ping_interval = 3000;
+const long ping_interval = 5000;
 unsigned long ping_last = 0;
 
 // Identified by their mac address bytes: 5c cf 7f xx xx xx
@@ -56,10 +56,9 @@ void setup() {
   Serial.println("Ready! Listen for UDP broadcasts on 239.0.0.58 port 12345");
 }
 
-
-void serialPrintLatestPayload() {
+void serialPrintRxBuffer() {
   Serial.println("Payload: ");
-  for (int i = 0; i < payload_length; i++) {
+  for (int i = 0; i < RX_BUFFER_SIZE; i++) {
     Serial.print(rx_buffer[i], HEX);
     Serial.print(" ");
   }
@@ -126,7 +125,9 @@ uint8_t sensorNum(uint8_t mac[6]) {
 uint8_t sensorNumFromRxBuffer() {
   // First 6 bytes of the payload are the mac address.
   uint8_t mac[6];
-  memcpy(rx_buffer, mac, 6);
+  for (int i = 0; i < 6; i++) {
+    mac[i] = rx_buffer[i];
+  }
   return sensorNum(mac);
 }
 
@@ -144,10 +145,12 @@ void loop() {
         // Wait for the payload header.
         if (c == 0xAA) {
           rx_buffer_index = 0;
+          // Clear the rx buffer, ready for new data.
+          memset(rx_buffer, 0, RX_BUFFER_SIZE);
           payload_state = ST_LENGTH;
         } else {
           // Passthru other serial messages.
-          Serial.print(char(c));
+          //Serial.print(char(c));
         }
         break;
         
@@ -159,8 +162,6 @@ void loop() {
       case ST_HEADER_VALIDATION:
         // Next byte is the end of the header.
         if (c == 0xAA) {
-          // Clear the rx buffer, ready for new data.
-          memset(rx_buffer, 0, payload_length);
           payload_state = ST_DATA;
         } else {
           // Not a real header, so start again.
@@ -171,11 +172,16 @@ void loop() {
       case ST_DATA:
         rx_buffer[rx_buffer_index++] = c;
         if (rx_buffer_index == payload_length) {
+          
           // Update the local copy of the payload.
           num = sensorNumFromRxBuffer();
-          memcpy(rx_buffer, payload_buffer[num], payload_length);
+          for (int i = 0; i < RX_BUFFER_SIZE; i++) {
+            payload_buffer[num][i] = rx_buffer[i];
+          }
+    
           // Store the size in the last byte of the payload buffer.
           payload_buffer[num][RX_BUFFER_SIZE -1] = payload_length;
+          
           payload_state = ST_READY;
         }
         break;
@@ -187,20 +193,11 @@ void loop() {
   }
 
   unsigned long currentMillis = millis();
-
-  // Send payload to listeners when ready.
   if (payload_state == ST_READY) {
-    // No need to ping if we're sending real data.
-    ping_last = currentMillis;
-    udpBroadcastPayload(num);
-    serialPrintLatestPayload();
-
-    // Ready for the next payload.
     payload_state = ST_WAITING;
-  }
-  // Send the data continually, as its UDP some may get missed.
-  // Only send if not currently processing incoming data.
-  else if ( (payload_state == ST_WAITING) && (currentMillis - ping_last >= ping_interval) ) {
+    serialPrintRxBuffer();
+    udpBroadcastPayload(num);
+  } else if ( (payload_state == ST_WAITING) && (currentMillis - ping_last >= ping_interval) ) {
     ping_last = currentMillis;
     udpPing();
   }

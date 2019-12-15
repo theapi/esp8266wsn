@@ -13,7 +13,7 @@
 
 static void printArray(const uint8_t *string, int size) {
   while (size) {
-    printf("%02x ", *string++);
+    printf("%02X ", *string++);
     size--;
   }
 }

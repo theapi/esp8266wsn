@@ -132,7 +132,7 @@ static void recv_task(void *pvParameter) {
 
       // // Debug output.
       // uint16_t slen = sprintf(uart_buffer, "%d - from "MACSTR", batt: %d, A: %d, delay: %d\n",
-      //   payload.message_id, MAC2STR(event.mac_addr), payload.batt, payload.adc[1], payload.delay);
+      //   payload.message_id, MAC2STR(payload.mac), payload.batt, payload.adc[1], payload.delay);
       // uart_write_bytes(UART_NUM_0, (const char *) uart_buffer, slen);
 
       // Send the serialized data through the UART.
