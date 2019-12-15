@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   int fd, nbytes;
   socklen_t addrlen;
   struct ip_mreq mreq;
-  uint8_t msgbuf[MSGBUFSIZE];
+  uint8_t msgbuf[MSGBUFSIZE] = {0};
 
   /* create what looks like an ordinary UDP socket */
   if ((fd = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
@@ -61,12 +61,11 @@ int main(int argc, char *argv[]) {
   /* Keep listening */
   while (1) {
     addrlen = sizeof(addr);
-    if ((nbytes = recvfrom(fd, msgbuf, MSGBUFSIZE, 0, (struct sockaddr *)&addr,
-                           &addrlen)) < 0) {
-      perror("recvfrom");
-      exit(1);
+    if ((nbytes = recvfrom(fd, msgbuf, MSGBUFSIZE, MSG_WAITALL, (struct sockaddr *)&addr,
+                           &addrlen)) > 0) {
+      printf("Received %d bytes: ", nbytes);
+      printArray(msgbuf, nbytes);
+      printf("\n");
     }
-    printf("\nReceived %d bytes: ", nbytes);
-    printArray(msgbuf, nbytes);
   }
 }

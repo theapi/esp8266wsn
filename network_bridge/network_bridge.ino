@@ -26,8 +26,8 @@ const long ping_interval = 5000;
 unsigned long ping_last = 0;
 
 // Identified by their mac address bytes: 5c cf 7f xx xx xx
-uint8_t sensors[MAX_SENSORS][6] = {};
-uint8_t payload_buffer[MAX_SENSORS][RX_BUFFER_SIZE] = {};
+uint8_t sensors[MAX_SENSORS][6] = {0};
+uint8_t payload_buffer[MAX_SENSORS][RX_BUFFER_SIZE] = {0};
 
 enum State {
   ST_WAITING,
@@ -178,7 +178,6 @@ void loop() {
           for (int i = 0; i < RX_BUFFER_SIZE; i++) {
             payload_buffer[num][i] = rx_buffer[i];
           }
-    
           // Store the size in the last byte of the payload buffer.
           payload_buffer[num][RX_BUFFER_SIZE -1] = payload_length;
           

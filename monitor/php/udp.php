@@ -30,7 +30,7 @@ while (1) {
         // A payload.
         $binarydata = trim($buf);
         if (strlen($binarydata) > 1) {
-            $array = unpack("Cmessage_type/Cmessage_id/n*", $binarydata);
+            $array = unpack("C6mac/Cmessage_type/Cmessage_id/n*", $binarydata);
             foreach ($array as $k => $v) {
                 // There is no option "signed short (always 16 bit, big endian byte order)"
                 if (is_int($k)) {
