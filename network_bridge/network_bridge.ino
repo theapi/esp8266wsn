@@ -8,6 +8,7 @@
 
 #define MAX_SENSORS 10
 #define RX_BUFFER_SIZE 64
+#define UDP_DELAY_EXTRA 6 // Number of seconds extra to wait to hear from the sensor again.
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
@@ -22,11 +23,13 @@ WiFiClient espClient;
 uint8_t rx_buffer[RX_BUFFER_SIZE];
 uint8_t rx_buffer_index = 0;
 uint8_t payload_length = 0;
-const long ping_interval = 5000;
+const long ping_interval = 3000;
 unsigned long ping_last = 0;
 
 // Identified by their mac address bytes: 5c cf 7f xx xx xx
 uint8_t sensors[MAX_SENSORS][6] = {0};
+uint16_t sensors_delay[MAX_SENSORS] = {0};
+unsigned long sensors_last[MAX_SENSORS] = {0};
 uint8_t payload_buffer[MAX_SENSORS][RX_BUFFER_SIZE] = {0};
 
 enum State {
@@ -86,9 +89,24 @@ void udpBroadcastPayload(uint8_t num) {
 }
 
 void udpPing() {
+  //@todo sensors_last is going to get too large eventually
+  unsigned long currentMillis = millis();
   for (uint8_t i = 0; i < MAX_SENSORS; i++) {
     if (payload_buffer[i][0] != 0) {
-      udpBroadcastPayload(i);
+//      Serial.print(currentMillis - sensors_last[i]);
+//      Serial.print(" > ");
+//      Serial.print((sensors_delay[i] + UDP_DELAY_EXTRA) * 1000);
+//      Serial.print(" = ");
+//      Serial.println(currentMillis - sensors_last[i] > (sensors_delay[i] + UDP_DELAY_EXTRA) * 1000);
+      if (currentMillis - sensors_last[i] > (sensors_delay[i] + UDP_DELAY_EXTRA) * 1000) {
+        // Not heard from the sensor so remove it.
+        sensors[i][0] = 0;
+        payload_buffer[i][0] = 0;
+        sensors_last[i] = 0;
+      } else {
+        Serial.println("PING");
+        udpBroadcastPayload(i);
+      }
     }
   }
 }
@@ -133,6 +151,8 @@ uint8_t sensorNumFromRxBuffer() {
 
 void loop() {
   uint8_t num = 0;
+
+  unsigned long currentMillis = millis();
   
   // Read the data from the receiver.
   while (Serial.available()) {
@@ -178,6 +198,10 @@ void loop() {
           for (int i = 0; i < RX_BUFFER_SIZE; i++) {
             payload_buffer[num][i] = rx_buffer[i];
           }
+          // update the delay for this sensor.
+          sensors_delay[num] = (payload_buffer[num][6] << 8) | (payload_buffer[num][7]);
+          sensors_last[num] = currentMillis;
+          
           // Store the size in the last byte of the payload buffer.
           payload_buffer[num][RX_BUFFER_SIZE -1] = payload_length;
           
@@ -191,7 +215,7 @@ void loop() {
     }
   }
 
-  unsigned long currentMillis = millis();
+  
   if (payload_state == ST_READY) {
     payload_state = ST_WAITING;
     serialPrintRxBuffer();
