@@ -200,8 +200,8 @@ void app_espnow_data_prepare() {
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
   ESP_LOGI(TAG, "Mac: %02X:%02X:%02X:%02X:%02X:%02X",
                 buf->mac[0], buf->mac[1], buf->mac[2], buf->mac[3], buf->mac[4], buf->mac[5]);
-  ESP_LOGI(TAG, "msg_id: %d, BATT: %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
-                buf->message_id, buf->batt,
+  ESP_LOGI(TAG, "Delay: %d, msg_id: %d, BATT: %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
+                buf->delay, buf->message_id, buf->batt,
                 buf->adc[0], buf->adc[1], buf->adc[2], buf->adc[3], buf->adc[4], buf->adc[5], buf->adc[6]);
 }
 
