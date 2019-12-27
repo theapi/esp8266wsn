@@ -186,9 +186,12 @@ void app_espnow_data_prepare() {
 
   /* Map the buffer to the struct for ease of manipulation */
   PAYLOAD_sensor_t *buf = (PAYLOAD_sensor_t *)buffer;
+
+  buf->payload_type = PAYLOAD_TYPE;
+
   //esp_read_mac(buf->mac, ESP_MAC_WIFI_STA);
   esp_efuse_mac_get_default(buf->mac);
-  buf->message_type = 200;
+
   buf->message_id = ++msg_id;
   buf->crc = 0;
   readings_get(buf->adc);
@@ -200,8 +203,8 @@ void app_espnow_data_prepare() {
       crc16_le(UINT16_MAX, (uint8_t const *)buf, sizeof(PAYLOAD_sensor_t));
   ESP_LOGI(TAG, "Mac: %02X:%02X:%02X:%02X:%02X:%02X",
                 buf->mac[0], buf->mac[1], buf->mac[2], buf->mac[3], buf->mac[4], buf->mac[5]);
-  ESP_LOGI(TAG, "Delay: %d, msg_id: %d, BATT: %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
-                buf->delay, buf->message_id, buf->batt,
+  ESP_LOGI(TAG, "Delay: %d, msg_id: %d, BATT: %d, CRC %d, ADC_0: %d, ADC_1: %d, ADC_2: %d, ADC_3: %d, ADC_4: %d, ADC_5: %d, ADC_6: %d",
+                buf->delay, buf->message_id, buf->batt, buf->crc,
                 buf->adc[0], buf->adc[1], buf->adc[2], buf->adc[3], buf->adc[4], buf->adc[5], buf->adc[6]);
 }
 

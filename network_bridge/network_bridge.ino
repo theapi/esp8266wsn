@@ -77,13 +77,10 @@ void udpBroadcastPayload(uint8_t num) {
   }
   
   Udp.beginPacketMulticast(ipMulti, portMulti, WiFi.localIP());
-  Udp.write('\t'); // Payload start byte
-
 
   // Send the contents of the buffer.
   Udp.write(payload_buffer[num], len);
 
-  Udp.write('\n');
   Udp.endPacket();
   Udp.stop();
 }
@@ -141,10 +138,10 @@ uint8_t sensorNum(uint8_t mac[6]) {
 }
 
 uint8_t sensorNumFromRxBuffer() {
-  // First 6 bytes of the payload are the mac address.
+  // First byte is the payload type, then the next 6 bytes are the mac address.
   uint8_t mac[6];
-  for (int i = 0; i < 6; i++) {
-    mac[i] = rx_buffer[i];
+  for (int i = 1; i < 7; i++) {
+    mac[i - 1] = rx_buffer[i];
   }
   return sensorNum(mac);
 }
@@ -199,7 +196,7 @@ void loop() {
             payload_buffer[num][i] = rx_buffer[i];
           }
           // update the delay for this sensor.
-          sensors_delay[num] = (payload_buffer[num][6] << 8) | (payload_buffer[num][7]);
+          sensors_delay[num] = (payload_buffer[num][6] << 9) | (payload_buffer[num][8]);
           sensors_last[num] = currentMillis;
           
           // Store the size in the last byte of the payload buffer.

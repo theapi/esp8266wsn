@@ -6,6 +6,8 @@ void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_
   memset(buffer, 0, sizeof(PAYLOAD_sensor_t));
   int b = 0;
 
+  buffer[b++] = payload->payload_type;
+
   /* Do the mac address */
   for (int i = 0; i < 6; i++) {
     buffer[b++] = payload->mac[i];
@@ -14,7 +16,6 @@ void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_
   buffer[b++] = (payload->delay >> 8);
   buffer[b++] = payload->delay;
 
-  buffer[b++] = payload->message_type;
   buffer[b++] = payload->message_id;
 
   /* Do the adc values. */
@@ -28,10 +29,15 @@ void PAYLOAD_serialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_
 
   buffer[b++] = (payload->batt >> 8);
   buffer[b++] = payload->batt;
+
+  buffer[b++] = (payload->crc >> 8);
+  buffer[b++] = payload->crc;
 }
 
 void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOAD_sensor_t)]) {
   int b = 0;
+
+  payload->payload_type = buffer[b++];
 
   /* Do the mac address */
   for (int i = 0; i < 6; i++) {
@@ -41,7 +47,6 @@ void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOA
   payload->delay = (buffer[b++] << 8);
   payload->delay |= buffer[b++];
 
-  payload->message_type = buffer[b++];
   payload->message_id = buffer[b++];
 
   /* Do the adc values. */
@@ -55,4 +60,7 @@ void PAYLOAD_unserialize(PAYLOAD_sensor_t *payload, uint8_t buffer[sizeof(PAYLOA
 
   payload->batt = (buffer[b++] << 8);
   payload->batt |= buffer[b++];
+
+  payload->crc = (buffer[b++] << 8);
+  payload->crc |= buffer[b++];
 }
