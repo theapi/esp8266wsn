@@ -8,7 +8,7 @@
 
 #define MAX_SENSORS 10
 #define RX_BUFFER_SIZE 64
-#define UDP_DELAY_EXTRA 6 // Number of seconds extra to wait to hear from the sensor again.
+#define UDP_DELAY_EXTRA 2 // Number of seconds extra to wait to hear from the sensor again.
 
 // A UDP instance to let us send and receive packets over UDP
 WiFiUDP Udp;
@@ -23,7 +23,7 @@ WiFiClient espClient;
 uint8_t rx_buffer[RX_BUFFER_SIZE];
 uint8_t rx_buffer_index = 0;
 uint8_t payload_length = 0;
-const long ping_interval = 3000;
+const long ping_interval = 2000;
 unsigned long ping_last = 0;
 
 // Identified by their mac address bytes: 5c cf 7f xx xx xx
@@ -75,7 +75,7 @@ void udpBroadcastPayload(uint8_t num) {
     // Makes no sense so ignore this payload.
     return;
   }
-  
+  Serial.printf("broadcast: %d, hex: %02X \n", num, payload_buffer[num][1]);
   Udp.beginPacketMulticast(ipMulti, portMulti, WiFi.localIP());
 
   // Send the contents of the buffer.
@@ -90,6 +90,7 @@ void udpPing() {
   unsigned long currentMillis = millis();
   for (uint8_t i = 0; i < MAX_SENSORS; i++) {
     if (payload_buffer[i][0] != 0) {
+//      Serial.printf("delay: %d last: %d\n", sensors_delay[i], sensors_last[i]);
 //      Serial.print(currentMillis - sensors_last[i]);
 //      Serial.print(" > ");
 //      Serial.print((sensors_delay[i] + UDP_DELAY_EXTRA) * 1000);
@@ -101,7 +102,7 @@ void udpPing() {
         payload_buffer[i][0] = 0;
         sensors_last[i] = 0;
       } else {
-        Serial.println("PING");
+        Serial.printf("Ping: %d\n", i);
         udpBroadcastPayload(i);
       }
     }
@@ -196,7 +197,7 @@ void loop() {
             payload_buffer[num][i] = rx_buffer[i];
           }
           // update the delay for this sensor.
-          sensors_delay[num] = (payload_buffer[num][6] << 9) | (payload_buffer[num][8]);
+          sensors_delay[num] = (payload_buffer[num][7] << 8) | (payload_buffer[num][8]);
           sensors_last[num] = currentMillis;
           
           // Store the size in the last byte of the payload buffer.
