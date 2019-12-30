@@ -230,17 +230,17 @@ void app_main() {
     esp_restart();
   }
 
-  // Check battery level before turning on the wifi.
-  multiplexer_set_channel(5);
-  uint16_t val;
-  adc_read(&val);
-  uint16_t batt = adc2Batt(val);
-  ESP_LOGI(TAG, "BATT: %d", batt);
-  if (batt < 2800) {
-    // Not enough for real work.
-    // Wait some time for the battery to charge.
-    esp_deep_sleep(4294967295); // ~71 minutes max for 32bit number.
-  }
+  // // Check battery level before turning on the wifi.
+  // multiplexer_set_channel(5);
+  // uint16_t val;
+  // adc_read(&val);
+  // uint16_t batt = adc2Batt(val);
+  // ESP_LOGI(TAG, "BATT: %d", batt);
+  // if (batt < 2800) {
+  //   // Not enough for real work.
+  //   // Wait some time for the battery to charge.
+  //   esp_deep_sleep(4294967295); // ~71 minutes max for 32bit number.
+  // }
 
   if (app_wifi_init() != ESP_OK) {
     esp_restart();
