@@ -225,10 +225,7 @@ static esp_err_t app_transmit() {
 }
 
 void app_main() {
-  setupGPIO();
-  if (readings_init() != ESP_OK) {
-    esp_restart();
-  }
+
 
   // // Check battery level before turning on the wifi.
   // multiplexer_set_channel(5);
@@ -246,6 +243,11 @@ void app_main() {
     esp_restart();
   }
   if (app_espnow_init() != ESP_OK) {
+    esp_restart();
+  }
+
+  setupGPIO();
+  if (readings_init() != ESP_OK) {
     esp_restart();
   }
 
