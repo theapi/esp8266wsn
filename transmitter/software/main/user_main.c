@@ -225,29 +225,15 @@ static esp_err_t app_transmit() {
 }
 
 void app_main() {
-
-
-  // // Check battery level before turning on the wifi.
-  // multiplexer_set_channel(5);
-  // uint16_t val;
-  // adc_read(&val);
-  // uint16_t batt = adc2Batt(val);
-  // ESP_LOGI(TAG, "BATT: %d", batt);
-  // if (batt < 2800) {
-  //   // Not enough for real work.
-  //   // Wait some time for the battery to charge.
-  //   esp_deep_sleep(4294967295); // ~71 minutes max for 32bit number.
-  // }
+  setupGPIO();
+  if (readings_init() != ESP_OK) {
+    esp_restart();
+  }
 
   if (app_wifi_init() != ESP_OK) {
     esp_restart();
   }
   if (app_espnow_init() != ESP_OK) {
-    esp_restart();
-  }
-
-  setupGPIO();
-  if (readings_init() != ESP_OK) {
     esp_restart();
   }
 
