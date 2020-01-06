@@ -20,8 +20,8 @@
 #define PIN_MULTIPLEX_B 12 // D6 (nodemcu)
 #define PIN_MULTIPLEX_C 13 // D7 (nodemcu)
 #define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) | (1ULL<<PIN_SENSOR_PWR) )
-#define GPIO_INPUT_IO_0     5
-#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
+//#define GPIO_INPUT_IO_0     5
+//#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
 #define DELAY_SECONDS 10
 
 static const char *TAG = "transmitter";
@@ -171,6 +171,11 @@ esp_err_t readings_init() {
   return ESP_OK;
 }
 
+static void sensePowerOff() {
+  multiplexer_set_channel(0);
+  gpio_set_level(PIN_SENSOR_PWR, 0);
+}
+
 /**
  * Battery id adc[0]
  * raw 557 = 3913 mV (on the bsttery)
@@ -238,17 +243,13 @@ void app_main() {
   }
 
   app_transmit();
+  sensePowerOff();
 
   // Deep sleep and restart after sleep.
   // Connect GPIO16 to RESET (after flashing for this to work)
   // disconnect GPIO16 to flash again.
   esp_deep_sleep(DELAY_SECONDS * 1000000);
 
-  // // Just for dev work as I need to flash with Arduino IDE after sleep :(
-  // while (1) {
-  //   vTaskDelay(DELAY_SECONDS * 1000 / portTICK_RATE_MS);
-  //   if (app_transmit() != ESP_OK) {
-  //     esp_restart();
-  //   }
-  // }
+  // vTaskDelay(DELAY_SECONDS * 1000 / portTICK_RATE_MS);
+  // esp_restart();
 }

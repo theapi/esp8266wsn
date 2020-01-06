@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP tpl5111
+D TPL5111 Nano-Power System Timer for Power Gating
+K Power Gating
+F http://www.ti.com/lit/ds/symlink/tpl5111.pdf
+$ENDCMP
+#
+#End Doc Library
