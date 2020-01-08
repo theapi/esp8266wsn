@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/peter/repos/esp8266wsn/transmitter/hardware/transmitter/transmitter.sch)
-    (date "Wed 08 Jan 2020 09:18:55 GMT")
+    (date "Wed 08 Jan 2020 09:45:24 GMT")
     (tool "Eeschema 5.0.2-bee76a0~70~ubuntu16.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -183,7 +183,7 @@
       (tstamp 5E0E3313))
     (comp (ref U2)
       (value tpl5111)
-      (footprint Package_TO_SOT_SMD:SOT-23-6_Handsoldering)
+      (footprint Package_TO_SOT_SMD:SuperSOT-6)
       (datasheet http://www.ti.com/lit/ds/symlink/tpl5111.pdf)
       (libsource (lib tpl5111) (part tpl5111) (description "TPL5111 Nano-Power System Timer for Power Gating"))
       (sheetpath (names /) (tstamps /))
@@ -211,7 +211,7 @@
       (tstamp 5E1611A9))
     (comp (ref SW1)
       (value SW_Push)
-      (footprint Button_Switch_THT:SW_Tactile_Straight_KSA0Axx1LFTR)
+      (footprint Button_Switch_THT:SW_Tactile_Straight_KSL0Axx1LFTR)
       (libsource (lib Switch) (part SW_Push) (description "Push button switch, generic, two pins"))
       (sheetpath (names /) (tstamps /))
       (tstamp 5E162F2D))
