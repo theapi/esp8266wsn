@@ -24439,7 +24439,7 @@ Text GLabel 5550 6700 2    50   Input ~ 0
 SOIL_6
 NoConn ~ 5550 6800
 Text Label 1500 6500 0    50   ~ 0
-PWR
+VBAT
 Wire Wire Line
 	1700 6500 1500 6500
 $Comp
