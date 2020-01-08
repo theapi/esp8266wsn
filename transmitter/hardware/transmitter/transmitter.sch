@@ -31,7 +31,7 @@ U 1 1 5DBC13A8
 P 5050 6300
 F 0 "U3" H 4675 7050 50  0000 C CNN
 F 1 "CD4051B" H 4800 6975 50  0000 C CNN
-F 2 "Package_DIP:DIP-16_W7.62mm" H 5200 5550 50  0001 L CNN
+F 2 "Package_SO:SOIC-16_3.9x9.9mm_P1.27mm" H 5200 5550 50  0001 L CNN
 F 3 "http://www.ti.com/lit/ds/symlink/cd4052b.pdf" H 5030 6400 50  0001 C CNN
 	1    5050 6300
 	1    0    0    -1  

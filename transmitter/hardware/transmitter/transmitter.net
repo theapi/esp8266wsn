@@ -1,7 +1,7 @@
 (export (version D)
   (design
     (source /home/peter/repos/esp8266wsn/transmitter/hardware/transmitter/transmitter.sch)
-    (date "Wed 08 Jan 2020 09:45:24 GMT")
+    (date "Wed 08 Jan 2020 21:15:30 GMT")
     (tool "Eeschema 5.0.2-bee76a0~70~ubuntu16.04.1")
     (sheet (number 1) (name /) (tstamps /)
       (title_block
@@ -23,7 +23,7 @@
       (tstamp 5DBC1267))
     (comp (ref U3)
       (value CD4051B)
-      (footprint Package_DIP:DIP-16_W7.62mm)
+      (footprint Package_SO:SOIC-16_3.9x9.9mm_P1.27mm)
       (datasheet http://www.ti.com/lit/ds/symlink/cd4052b.pdf)
       (libsource (lib Analog_Switch) (part CD4051B) (description "CMOS single 8-channel analog multiplexer demultiplexer, TSSOP-16/DIP-16/SOIC-16"))
       (sheetpath (names /) (tstamps /))

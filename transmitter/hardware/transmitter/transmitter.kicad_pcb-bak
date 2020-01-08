@@ -242,7 +242,7 @@
   )
 
   (module Package_TO_SOT_SMD:SuperSOT-6 (layer F.Cu) (tedit 5A02FF57) (tstamp 5E21EBF9)
-    (at 120.62 96.445 180)
+    (at 118.07 96.095 180)
     (descr "6-pin SuperSOT package http://www.mouser.com/ds/2/149/FMB5551-889214.pdf")
     (tags "SuperSOT-6 SSOT-6")
     (path /5E151AE8)
@@ -1499,7 +1499,7 @@
   )
 
   (module Package_TO_SOT_SMD:SOT-23 (layer F.Cu) (tedit 5A02FF57) (tstamp 5E21EB3A)
-    (at 192.345001 73.370001)
+    (at 141.22 86.695)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /5E1668AB)
@@ -1540,7 +1540,7 @@
   )
 
   (module Package_TO_SOT_SMD:SOT-23 (layer F.Cu) (tedit 5A02FF57) (tstamp 5E21EB4F)
-    (at 197.155001 69.720001)
+    (at 141.32 82.595)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /5E1672FD)
@@ -1581,7 +1581,7 @@
   )
 
   (module Package_TO_SOT_SMD:SOT-23 (layer F.Cu) (tedit 5A02FF57) (tstamp 5E21EB64)
-    (at 195.795001 73.370001)
+    (at 132.37 102.395)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /5E0DACCE)
@@ -1622,7 +1622,7 @@
   )
 
   (module Package_TO_SOT_SMD:SOT-23 (layer F.Cu) (tedit 5A02FF57) (tstamp 5E21EB79)
-    (at 200.605001 69.720001)
+    (at 127.92 102.545)
     (descr "SOT-23, Standard")
     (tags SOT-23)
     (path /5E0E3313)
@@ -1925,7 +1925,7 @@
   )
 
   (module Package_TO_SOT_SMD:SOT-23-5_HandSoldering (layer F.Cu) (tedit 5A0AB76C) (tstamp 5E21EC39)
-    (at 130.72 101.145)
+    (at 124.47 96.695)
     (descr "5-pin SOT23 package")
     (tags "SOT-23-5 hand-soldering")
     (path /5E13C221)
