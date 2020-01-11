@@ -23,6 +23,9 @@ Connects the ESPNOW network to the WiFi network.
 
 
 ## Monitor
-A application using SDL2 that monitors the UDP messages from the network bridge. 
+Very basic UDP message listeners are provided in this repo:
 
-- [Software](./monitor)
+- [C](./monitor/c)
+- [php](./monitor/php)
+
+A more sophisticated monitor is the [WSN Monitor](https://gitlab.com/theapi/wsn_monitor_sdl) 
