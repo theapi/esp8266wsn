@@ -4,8 +4,7 @@
 - [Datasheets](./datasheets)
 
 
+
+![](./pcb_bottom.png) ![](./pcb_top.png)
+
 ![](./pcb_layout.png)
-
-![](./pcb_top.png)
-
-![](./pcb_bottom.png)
