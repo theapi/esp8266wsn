@@ -13,7 +13,8 @@ Soil moisture sensors that transmit their data to the ESPNOW network.
 ## Receiver
 The receiver for the ESPNOW network, which sends the data to the network bridge.
 
-- [Software](./receiver)
+- [Hardware](./receiver/hardware)
+- [Software](./receiver/sfotware)
 
 
 ## Network Bridge
