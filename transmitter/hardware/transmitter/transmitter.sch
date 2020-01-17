@@ -121,7 +121,6 @@ Wire Wire Line
 	4925 4950 5150 4950
 Wire Wire Line
 	5325 4950 5325 4975
-NoConn ~ 3300 5300
 NoConn ~ 3300 5400
 NoConn ~ 3300 5500
 NoConn ~ 3300 6100
@@ -24437,7 +24436,6 @@ Text GLabel 5550 6500 2    50   Input ~ 0
 SOIL_5
 Text GLabel 5550 6700 2    50   Input ~ 0
 SOIL_6
-NoConn ~ 5550 6800
 Text Label 1500 6500 0    50   ~ 0
 VBAT
 Wire Wire Line
@@ -24729,12 +24727,10 @@ Wire Wire Line
 Wire Wire Line
 	6100 2700 6325 2700
 Wire Wire Line
-	6325 2900 6950 2900
+	6325 2900 6575 2900
 NoConn ~ 7900 2900
-NoConn ~ 3300 5100
 Text GLabel 5100 4700 0    50   Input ~ 0
 3V3
-NoConn ~ 1700 6300
 Wire Wire Line
 	3300 5800 4550 5800
 Wire Wire Line
@@ -25005,36 +25001,138 @@ Wire Wire Line
 $Comp
 L Device:LED D1
 U 1 1 5E19B559
-P 1300 4600
-F 0 "D1" H 1292 4345 50  0000 C CNN
-F 1 "LED" H 1292 4436 50  0000 C CNN
-F 2 "LED_SMD:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 1300 4600 50  0001 C CNN
-F 3 "~" H 1300 4600 50  0001 C CNN
-	1    1300 4600
+P 2675 7325
+F 0 "D1" H 2667 7070 50  0000 C CNN
+F 1 "LED" H 2667 7161 50  0000 C CNN
+F 2 "LED_SMD:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2675 7325 50  0001 C CNN
+F 3 "~" H 2675 7325 50  0001 C CNN
+	1    2675 7325
 	-1   0    0    1   
 $EndComp
 $Comp
 L power:GND #PWR024
 U 1 1 5E19B6C0
-P 1450 4600
-F 0 "#PWR024" H 1450 4350 50  0001 C CNN
-F 1 "GND" H 1455 4427 50  0000 C CNN
-F 2 "" H 1450 4600 50  0001 C CNN
-F 3 "" H 1450 4600 50  0001 C CNN
-	1    1450 4600
+P 2825 7325
+F 0 "#PWR024" H 2825 7075 50  0001 C CNN
+F 1 "GND" H 2830 7152 50  0000 C CNN
+F 2 "" H 2825 7325 50  0001 C CNN
+F 3 "" H 2825 7325 50  0001 C CNN
+	1    2825 7325
 	1    0    0    -1  
 $EndComp
-Text GLabel 850  4600 0    50   Input ~ 0
+Text GLabel 2225 7325 0    50   Input ~ 0
 3V3
 $Comp
 L Device:R R15
 U 1 1 5E1AD055
-P 1000 4600
-F 0 "R15" V 793 4600 50  0000 C CNN
-F 1 "1K" V 884 4600 50  0000 C CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 930 4600 50  0001 C CNN
-F 3 "~" H 1000 4600 50  0001 C CNN
-	1    1000 4600
+P 2375 7325
+F 0 "R15" V 2168 7325 50  0000 C CNN
+F 1 "1K" V 2259 7325 50  0000 C CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 2305 7325 50  0001 C CNN
+F 3 "~" H 2375 7325 50  0001 C CNN
+	1    2375 7325
 	0    1    1    0   
 $EndComp
+$Comp
+L Device:R R18
+U 1 1 5E2244F7
+P 5925 4300
+F 0 "R18" V 5850 4250 50  0000 L CNN
+F 1 "100K" V 6025 4225 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5855 4300 50  0001 C CNN
+F 3 "~" H 5925 4300 50  0001 C CNN
+	1    5925 4300
+	0    1    1    0   
+$EndComp
+$Comp
+L Device:R R19
+U 1 1 5E2244FE
+P 6225 4300
+F 0 "R19" V 6150 4250 50  0000 L CNN
+F 1 "10K" V 6325 4225 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 6155 4300 50  0001 C CNN
+F 3 "~" H 6225 4300 50  0001 C CNN
+	1    6225 4300
+	0    1    1    0   
+$EndComp
+$Comp
+L power:GND #PWR025
+U 1 1 5E224505
+P 6500 4300
+F 0 "#PWR025" H 6500 4050 50  0001 C CNN
+F 1 "GND" H 6505 4127 50  0000 C CNN
+F 2 "" H 6500 4300 50  0001 C CNN
+F 3 "" H 6500 4300 50  0001 C CNN
+	1    6500 4300
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	6375 4300 6500 4300
+$Comp
+L Device:R R16
+U 1 1 5E227A5D
+P 5050 4300
+F 0 "R16" V 4975 4225 50  0000 L CNN
+F 1 "10K" V 5150 4225 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 4980 4300 50  0001 C CNN
+F 3 "~" H 5050 4300 50  0001 C CNN
+	1    5050 4300
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	3300 5300 4150 5300
+Wire Wire Line
+	5550 6800 6350 6800
+Wire Wire Line
+	6350 6800 6350 5100
+Text Notes 5900 4975 0    50   ~ 0
+Copy of the \ntpl511 resistors\nso the payload can \nsend the delay time.\n(don't populate \nif jumpered to SW1)
+NoConn ~ 1700 6300
+NoConn ~ 3300 5100
+$Comp
+L Device:Jumper_NO_Small JP1
+U 1 1 5E23713E
+P 5400 4200
+F 0 "JP1" V 5446 4152 50  0000 R CNN
+F 1 "Jumper" V 5355 4152 50  0000 R CNN
+F 2 "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm" H 5400 4200 50  0001 C CNN
+F 3 "~" H 5400 4200 50  0001 C CNN
+	1    5400 4200
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	5200 4300 5400 4300
+Wire Wire Line
+	5775 4300 5400 4300
+Connection ~ 5400 4300
+Wire Wire Line
+	5400 4100 5400 3375
+Wire Wire Line
+	5400 4650 5750 4650
+Wire Wire Line
+	5750 4650 5750 5100
+Wire Wire Line
+	5750 5100 6350 5100
+Wire Wire Line
+	4150 5300 4150 4300
+Wire Wire Line
+	4150 4300 4900 4300
+Wire Wire Line
+	5400 4300 5400 4650
+Text Label 5925 6800 0    50   ~ 0
+DELAY_VAL
+$Comp
+L Connector:TestPoint TP1
+U 1 1 5E26FDC7
+P 6575 2900
+F 0 "TP1" H 6500 3125 50  0000 R CNN
+F 1 "TestPoint" H 6517 3018 50  0000 R CNN
+F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 6775 2900 50  0001 C CNN
+F 3 "~" H 6775 2900 50  0001 C CNN
+	1    6575 2900
+	-1   0    0    1   
+$EndComp
+Connection ~ 6575 2900
+Wire Wire Line
+	6575 2900 6950 2900
 $EndSCHEMATC
