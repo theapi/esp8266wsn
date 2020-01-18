@@ -25034,41 +25034,6 @@ F 3 "~" H 2375 7325 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R R18
-U 1 1 5E2244F7
-P 5925 4300
-F 0 "R18" V 5850 4250 50  0000 L CNN
-F 1 "100K" V 6025 4225 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5855 4300 50  0001 C CNN
-F 3 "~" H 5925 4300 50  0001 C CNN
-	1    5925 4300
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R19
-U 1 1 5E2244FE
-P 6225 4300
-F 0 "R19" V 6150 4250 50  0000 L CNN
-F 1 "10K" V 6325 4225 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 6155 4300 50  0001 C CNN
-F 3 "~" H 6225 4300 50  0001 C CNN
-	1    6225 4300
-	0    1    1    0   
-$EndComp
-$Comp
-L power:GND #PWR025
-U 1 1 5E224505
-P 6500 4300
-F 0 "#PWR025" H 6500 4050 50  0001 C CNN
-F 1 "GND" H 6505 4127 50  0000 C CNN
-F 2 "" H 6500 4300 50  0001 C CNN
-F 3 "" H 6500 4300 50  0001 C CNN
-	1    6500 4300
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	6375 4300 6500 4300
-$Comp
 L Device:R R16
 U 1 1 5E227A5D
 P 5050 4300
@@ -25085,8 +25050,6 @@ Wire Wire Line
 	5550 6800 6350 6800
 Wire Wire Line
 	6350 6800 6350 5100
-Text Notes 5900 4975 0    50   ~ 0
-Copy of the \ntpl511 resistors\nso the payload can \nsend the delay time.\n(don't populate \nif jumpered to SW1)
 NoConn ~ 1700 6300
 NoConn ~ 3300 5100
 $Comp
@@ -25102,8 +25065,6 @@ F 3 "~" H 5400 4200 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5200 4300 5400 4300
-Wire Wire Line
-	5775 4300 5400 4300
 Connection ~ 5400 4300
 Wire Wire Line
 	5400 4100 5400 3375
