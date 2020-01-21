@@ -24604,54 +24604,52 @@ Wire Wire Line
 $Comp
 L Device:R R13
 U 1 1 5E1610DB
-P 5600 3375
-F 0 "R13" V 5525 3325 50  0000 L CNN
-F 1 "100K" V 5700 3300 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5530 3375 50  0001 C CNN
-F 3 "~" H 5600 3375 50  0001 C CNN
-	1    5600 3375
+P 5550 3550
+F 0 "R13" V 5475 3500 50  0000 L CNN
+F 1 "100K" V 5650 3475 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5480 3550 50  0001 C CNN
+F 3 "~" H 5550 3550 50  0001 C CNN
+	1    5550 3550
 	0    1    1    0   
 $EndComp
 $Comp
 L Device:R R14
 U 1 1 5E1611A9
-P 5900 3375
-F 0 "R14" V 5825 3325 50  0000 L CNN
-F 1 "10K" V 6000 3300 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5830 3375 50  0001 C CNN
-F 3 "~" H 5900 3375 50  0001 C CNN
-	1    5900 3375
+P 5850 3550
+F 0 "R14" V 5775 3500 50  0000 L CNN
+F 1 "10K" V 5950 3475 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5780 3550 50  0001 C CNN
+F 3 "~" H 5850 3550 50  0001 C CNN
+	1    5850 3550
 	0    1    1    0   
 $EndComp
-Text Notes 5525 3750 0    50   ~ 0
+Text Notes 5475 3925 0    50   ~ 0
 About 45 minutes \nwith 110K
 $Comp
 L power:GND #PWR021
 U 1 1 5E162D94
-P 6175 3375
-F 0 "#PWR021" H 6175 3125 50  0001 C CNN
-F 1 "GND" H 6180 3202 50  0000 C CNN
-F 2 "" H 6175 3375 50  0001 C CNN
-F 3 "" H 6175 3375 50  0001 C CNN
-	1    6175 3375
+P 6100 3550
+F 0 "#PWR021" H 6100 3300 50  0001 C CNN
+F 1 "GND" H 6105 3377 50  0000 C CNN
+F 2 "" H 6100 3550 50  0001 C CNN
+F 3 "" H 6100 3550 50  0001 C CNN
+	1    6100 3550
 	1    0    0    -1  
 $EndComp
 $Comp
 L Switch:SW_Push SW1
 U 1 1 5E162F2D
-P 5100 3375
-F 0 "SW1" H 5175 3200 50  0000 R CNN
-F 1 "SW_Push" H 5275 3300 50  0000 R CNN
-F 2 "Button_Switch_THT:SW_Tactile_Straight_KSL0Axx1LFTR" H 5100 3575 50  0001 C CNN
-F 3 "" H 5100 3575 50  0001 C CNN
-	1    5100 3375
+P 5100 3550
+F 0 "SW1" H 5175 3725 50  0000 R CNN
+F 1 "SW_Push" H 5275 3475 50  0000 R CNN
+F 2 "Button_Switch_THT:SW_Tactile_Straight_KSL0Axx1LFTR" H 5100 3750 50  0001 C CNN
+F 3 "" H 5100 3750 50  0001 C CNN
+	1    5100 3550
 	1    0    0    -1  
 $EndComp
 Connection ~ 4500 2700
 Wire Wire Line
 	4500 2700 4500 2750
-Wire Wire Line
-	6050 3375 6175 3375
 Wire Wire Line
 	4500 2700 5050 2700
 Wire Wire Line
@@ -24739,10 +24737,8 @@ Wire Wire Line
 	3300 6000 4550 6000
 Text GLabel 3300 5200 2    50   Input ~ 0
 DONE
-Text GLabel 6100 3100 2    50   Input ~ 0
+Text GLabel 6125 3100 2    50   Input ~ 0
 DONE
-Wire Wire Line
-	6100 2850 6100 3100
 Wire Notes Line
 	11175 6475 11175 4200
 Wire Notes Line
@@ -24984,20 +24980,11 @@ Wire Wire Line
 Connection ~ 2325 1200
 Wire Wire Line
 	4200 3250 4900 3250
-Wire Wire Line
-	4900 3250 4900 3375
 Connection ~ 4200 3250
-Wire Wire Line
-	5300 3375 5400 3375
 Wire Wire Line
 	5050 3100 5400 3100
 Wire Wire Line
-	5400 3100 5400 3375
-Wire Wire Line
 	5050 2850 5050 3100
-Connection ~ 5400 3375
-Wire Wire Line
-	5400 3375 5450 3375
 $Comp
 L Device:LED D1
 U 1 1 5E19B559
@@ -25034,41 +25021,6 @@ F 3 "~" H 2375 7325 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L Device:R R18
-U 1 1 5E2244F7
-P 5925 4300
-F 0 "R18" V 5850 4250 50  0000 L CNN
-F 1 "100K" V 6025 4225 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 5855 4300 50  0001 C CNN
-F 3 "~" H 5925 4300 50  0001 C CNN
-	1    5925 4300
-	0    1    1    0   
-$EndComp
-$Comp
-L Device:R R19
-U 1 1 5E2244FE
-P 6225 4300
-F 0 "R19" V 6150 4250 50  0000 L CNN
-F 1 "10K" V 6325 4225 50  0000 L CNN
-F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 6155 4300 50  0001 C CNN
-F 3 "~" H 6225 4300 50  0001 C CNN
-	1    6225 4300
-	0    1    1    0   
-$EndComp
-$Comp
-L power:GND #PWR025
-U 1 1 5E224505
-P 6500 4300
-F 0 "#PWR025" H 6500 4050 50  0001 C CNN
-F 1 "GND" H 6505 4127 50  0000 C CNN
-F 2 "" H 6500 4300 50  0001 C CNN
-F 3 "" H 6500 4300 50  0001 C CNN
-	1    6500 4300
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	6375 4300 6500 4300
-$Comp
 L Device:R R16
 U 1 1 5E227A5D
 P 5050 4300
@@ -25085,8 +25037,6 @@ Wire Wire Line
 	5550 6800 6350 6800
 Wire Wire Line
 	6350 6800 6350 5100
-Text Notes 5900 4975 0    50   ~ 0
-Copy of the \ntpl511 resistors\nso the payload can \nsend the delay time.\n(don't populate \nif jumpered to SW1)
 NoConn ~ 1700 6300
 NoConn ~ 3300 5100
 $Comp
@@ -25102,11 +25052,7 @@ F 3 "~" H 5400 4200 50  0001 C CNN
 $EndComp
 Wire Wire Line
 	5200 4300 5400 4300
-Wire Wire Line
-	5775 4300 5400 4300
 Connection ~ 5400 4300
-Wire Wire Line
-	5400 4100 5400 3375
 Wire Wire Line
 	5400 4650 5750 4650
 Wire Wire Line
@@ -25135,4 +25081,36 @@ $EndComp
 Connection ~ 6575 2900
 Wire Wire Line
 	6575 2900 6950 2900
+$Comp
+L Device:R R17
+U 1 1 5E2704DC
+P 6100 3325
+F 0 "R17" H 6170 3371 50  0000 L CNN
+F 1 "10K" H 6170 3280 50  0000 L CNN
+F 2 "Resistor_SMD:R_0603_1608Metric_Pad1.05x0.95mm_HandSolder" V 6030 3325 50  0001 C CNN
+F 3 "~" H 6100 3325 50  0001 C CNN
+	1    6100 3325
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	5400 3100 5400 3550
+Connection ~ 5400 3550
+Wire Wire Line
+	5400 3550 5400 4100
+Wire Wire Line
+	5300 3550 5400 3550
+Wire Wire Line
+	4900 3250 4900 3550
+Wire Wire Line
+	6000 3550 6100 3550
+Wire Wire Line
+	6100 3550 6100 3475
+Connection ~ 6100 3550
+Wire Wire Line
+	6100 2850 6100 3100
+Wire Wire Line
+	6125 3100 6100 3100
+Connection ~ 6100 3100
+Wire Wire Line
+	6100 3100 6100 3175
 $EndSCHEMATC
