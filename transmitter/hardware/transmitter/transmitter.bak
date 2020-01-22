@@ -165,7 +165,7 @@ Wire Wire Line
 	3375 900  3375 800 
 Wire Wire Line
 	3375 800  3175 800 
-Text GLabel 3675 1200 2    50   Input ~ 0
+Text GLabel 4225 1200 2    50   Input ~ 0
 BATT_SENSE
 Text GLabel 5550 6600 2    50   Input ~ 0
 BATT_SENSE
@@ -24956,8 +24956,6 @@ Text GLabel 1875 1350 0    50   Input ~ 0
 Wire Wire Line
 	1875 1350 2075 1350
 Connection ~ 2075 1350
-Wire Wire Line
-	3375 1200 3675 1200
 Connection ~ 3375 1200
 Wire Wire Line
 	4200 3250 4900 3250
@@ -25195,4 +25193,20 @@ Wire Notes Line
 	600  550  11150 550 
 Wire Notes Line
 	600  1900 11150 1900
+$Comp
+L Connector:TestPoint TP2
+U 1 1 5E2FEBE9
+P 3825 1200
+F 0 "TP2" H 3750 1425 50  0000 R CNN
+F 1 "TestPoint" H 3767 1318 50  0000 R CNN
+F 2 "TestPoint:TestPoint_Pad_D1.0mm" H 4025 1200 50  0001 C CNN
+F 3 "~" H 4025 1200 50  0001 C CNN
+	1    3825 1200
+	-1   0    0    1   
+$EndComp
+Wire Wire Line
+	3375 1200 3825 1200
+Connection ~ 3825 1200
+Wire Wire Line
+	3825 1200 4225 1200
 $EndSCHEMATC
