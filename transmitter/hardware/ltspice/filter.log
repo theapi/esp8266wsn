@@ -1,0 +1,21 @@
+Circuit: * Z:\home\peter\repos\esp8266wsn\transmitter\hardware\ltspice\filter.asc
+
+.OP point found by inspection.
+
+Date: Mon Jan 27 12:22:56 2020
+Total elapsed time: 0.057 seconds.
+
+tnom = 27
+temp = 27
+method = modified trap
+totiter = 2232
+traniter = 2232
+tranpoints = 1117
+accept = 1096
+rejected = 21
+matrix size = 3
+fillins = 0
+solver = Normal
+Matrix Compiler1: 50 bytes object code size  0.7/0.7/[0.7]
+Matrix Compiler2: 175 bytes object code size  0.7/0.7/[0.7]
+
