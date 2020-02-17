@@ -97,7 +97,7 @@ void DisplayPayload_show(PAYLOAD_sensor_t *payload) {
 
   // Displays for 3 multi input sensors.
   // 1st led is for the first sensor.
-  // xxxx xxxR GBRG BRGB
+  // xRGB RGBR GBRG BRGB
   uint16_t red = (DP_RED << sensor * 3);
   uint16_t green = (DP_GREEN << sensor * 3);
   uint16_t blue = (DP_BLUE << sensor * 3);

@@ -9,7 +9,7 @@ extern "C" {
 #define DP_DELAY_EXTRA 5 // Number of seconds extra to wait to hear from the sensor again.
 #define DP_WATER_THRESHOLD 900
 #define DP_BATTERY_THRESHOLD 3600
-#define DP_NUM_SENSORS 3
+#define DP_NUM_SENSORS 5
 
 #define DP_RED 0x01
 #define DP_GREEN 0x02
