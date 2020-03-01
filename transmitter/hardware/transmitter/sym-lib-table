@@ -1,3 +1,6 @@
 (sym_lib_table
   (lib (name ESP8266)(type Legacy)(uri ${KIPRJMOD}/ESP8266.lib)(options "")(descr ""))
+  (lib (name tps737)(type Legacy)(uri /home/peter/repos/esp8266wsn/transmitter/hardware/transmitter/tps737.lib)(options "")(descr ""))
+  (lib (name tpl5111)(type Legacy)(uri /home/peter/repos/esp8266wsn/transmitter/hardware/transmitter/tpl5111.lib)(options "")(descr ""))
+  (lib (name bd48x)(type Legacy)(uri /home/peter/repos/esp8266wsn/transmitter/hardware/transmitter/bd48x.lib)(options "")(descr ""))
 )

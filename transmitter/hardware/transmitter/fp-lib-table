@@ -2,4 +2,5 @@
   (lib (name ESP8266)(type KiCad)(uri ${KIPRJMOD}/ESP8266.pretty)(options "")(descr ""))
   (lib (name tp4056)(type KiCad)(uri ${KIPRJMOD}/tp4056.pretty)(options "")(descr ""))
   (lib (name theapi)(type KiCad)(uri ${KIPRJMOD}/theapi.pretty)(options "")(descr ""))
+  (lib (name tpl511x)(type KiCad)(uri ${KIPRJMOD}/tpl511x.pretty)(options "")(descr ""))
 )

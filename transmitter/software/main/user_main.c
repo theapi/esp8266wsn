@@ -15,14 +15,12 @@
 #include "driver/adc.h"
 #include "driver/gpio.h"
 
-#define PIN_SENSOR_PWR  5  // D1 (nodemcu)
+#define PIN_DONE  5  // D1 (nodemcu)
 #define PIN_MULTIPLEX_A 14 // D5 (nodemcu)
 #define PIN_MULTIPLEX_B 12 // D6 (nodemcu)
 #define PIN_MULTIPLEX_C 13 // D7 (nodemcu)
-#define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) | (1ULL<<PIN_SENSOR_PWR) )
-#define GPIO_INPUT_IO_0     5
-#define GPIO_INPUT_PIN_SEL  (1ULL<<GPIO_INPUT_IO_0)
-#define DELAY_SECONDS 10
+#define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) | (1ULL<<PIN_DONE) )
+#define DELAY_SECONDS 40 * 60 // (36.26815) How long between each transmission (harware defined by resistors)
 
 static const char *TAG = "transmitter";
 
@@ -119,11 +117,6 @@ static void setupGPIO() {
     io_conf.pull_up_en = 0;
     //configure GPIO with the given settings
     gpio_config(&io_conf);
-
-    // io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
-    // //set as input mode
-    // io_conf.mode = GPIO_MODE_INPUT;
-    // gpio_config(&io_conf);
 }
 
 /* Selects the ADC multiplexer channel. */
@@ -166,22 +159,20 @@ esp_err_t readings_init() {
     return ESP_FAIL;
   }
 
-  gpio_set_level(PIN_SENSOR_PWR, 1);
-
   return ESP_OK;
 }
 
 /**
  * Battery id adc[0]
- * raw 557 = 3913 mV (on the bsttery)
- * so 1 = 7.02513465 mV
+ * raw 484 = 3619 mV (on the battery)
+ * so 1 = 7.477272727 mV
  */
 static uint16_t adc2Batt(uint16_t val) {
-  return val * 7.02513465;
+  return val * 7.477272727;
 }
 
 /* Prepare ESPNOW data to be sent. */
-void app_espnow_data_prepare() {
+static void data_prepare() {
   static uint8_t msg_id = 0;
 
   /* Map the buffer to the struct for ease of manipulation */
@@ -208,8 +199,7 @@ void app_espnow_data_prepare() {
                 buf->adc[0], buf->adc[1], buf->adc[2], buf->adc[3], buf->adc[4], buf->adc[5], buf->adc[6]);
 }
 
-static esp_err_t app_transmit() {
-  app_espnow_data_prepare();
+static esp_err_t transmit() {
   ESP_LOGI(TAG, "RAM left %d bytes", esp_get_free_heap_size());
 
   /* Start sending broadcast ESPNOW data. */
@@ -226,6 +216,10 @@ static esp_err_t app_transmit() {
 
 void app_main() {
   setupGPIO();
+
+  // Ensure the power is kept on
+  gpio_set_level(PIN_DONE, 0);
+
   if (readings_init() != ESP_OK) {
     esp_restart();
   }
@@ -237,18 +231,14 @@ void app_main() {
     esp_restart();
   }
 
-  app_transmit();
+  data_prepare();
+  transmit();
 
-  // Deep sleep and restart after sleep.
-  // Connect GPIO16 to RESET (after flashing for this to work)
-  // disconnect GPIO16 to flash again.
-  esp_deep_sleep(DELAY_SECONDS * 1000000);
+  // Turn off the power. (total power on time = 39ms)
+  gpio_set_level(PIN_DONE, 1);
 
-  // // Just for dev work as I need to flash with Arduino IDE after sleep :(
-  // while (1) {
-  //   vTaskDelay(DELAY_SECONDS * 1000 / portTICK_RATE_MS);
-  //   if (app_transmit() != ESP_OK) {
-  //     esp_restart();
-  //   }
-  // }
+  // Shouldn't get here.
+  // Just in case to stop many transmissions.
+  vTaskDelay(DELAY_SECONDS * 1000 / portTICK_RATE_MS);
+  esp_restart();
 }

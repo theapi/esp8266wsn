@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP tps73733
+D TPS737xx 1-A Low-Dropout Regulator With Reverse Current Protection
+K LDO
+F http://www.ti.com/lit/ds/symlink/tps737.pdf
+$ENDCMP
+#
+#End Doc Library

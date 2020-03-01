@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP BD4833G
+D Voltage Detector
+K Voltage Detector
+F http://www.farnell.com/datasheets/2293328.pdf
+$ENDCMP
+#
+#End Doc Library

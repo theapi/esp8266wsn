@@ -21,7 +21,7 @@ typedef enum {
   * @brief  DISPLAY Handle Structure definition
   */
 typedef struct __DISPLAY_HandleTypeDef {
-  uint16_t pixels; /* Three rgb leds, either on or off, one bit each colour xxxxxxxRGBRGBRGB */
+  uint16_t pixels; /* Three rgb leds, either on or off, one bit each colour xRGB RGB RGB RGB RGB */
   DISPLAY_StateTypeDef state;  /* On/off */
 } DISPLAY_HandleTypeDef;
 

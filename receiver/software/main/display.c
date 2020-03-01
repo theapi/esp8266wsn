@@ -8,23 +8,10 @@ DISPLAY_HandleTypeDef hdisplay;
 
 void Display_update(DISPLAY_HandleTypeDef *hdisplay) {
     // Write 8-bit data to the shift register.
-    uint32_t buf = hdisplay->pixels << 24;
+    uint32_t buf = hdisplay->pixels << 16;
     spi_trans_t trans = {0};
     trans.mosi = &buf;
-    trans.bits.mosi = 8;
-
-    if (hdisplay->state == DISPLAY_STATE_ON) {
-        // If the 3rd pixel blue is set then turn on that pin.
-        if ((hdisplay->pixels >> 8) & 1) {
-            gpio_set_level(DISPLAY_PIN_BLUE, 1);
-        } else {
-            gpio_set_level(DISPLAY_PIN_BLUE, 0);
-        }
-    } else {
-        buf = 0;
-        gpio_set_level(DISPLAY_PIN_BLUE, 0);
-    }
-
+    trans.bits.mosi = 16;
     spi_trans(HSPI_HOST, trans);
 }
 

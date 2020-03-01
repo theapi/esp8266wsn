@@ -3,6 +3,7 @@
  */
 
 #include "freertos/FreeRTOS.h"
+#include "freertos/timers.h"
 
 #include "driver/uart.h"
 
@@ -42,7 +43,7 @@ void app_main(void) {
     esp_restart();
   }
 
-  hdisplay.pixels = 0x1FF;
+  hdisplay.pixels = 0xFFFF;
   Display_update(&hdisplay);
 
   if (DisplayPayload_start() != ESP_OK) {
@@ -52,5 +53,13 @@ void app_main(void) {
   if (Network_start() != ESP_OK) {
     esp_restart();
   }
+
+  // hdisplay.pixels = 1;
+  // Display_update(&hdisplay);
+  // while (1 != 2) {
+  //   vTaskDelay(10 / portTICK_RATE_MS);
+  //   hdisplay.pixels++;
+  //   Display_update(&hdisplay);
+  // }
 
 }
