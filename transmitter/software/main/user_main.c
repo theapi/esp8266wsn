@@ -20,7 +20,7 @@
 #define PIN_MULTIPLEX_B 12 // D6 (nodemcu)
 #define PIN_MULTIPLEX_C 13 // D7 (nodemcu)
 #define GPIO_OUTPUT_PIN_SEL ((1ULL<<PIN_MULTIPLEX_A) | (1ULL<<PIN_MULTIPLEX_B) | (1ULL<<PIN_MULTIPLEX_C) | (1ULL<<PIN_DONE) )
-#define DELAY_SECONDS 10 //50 * 60 // How long between each transmission (harware defined by resistors)
+#define DELAY_SECONDS 40 * 60 // (36.26815) How long between each transmission (harware defined by resistors)
 
 static const char *TAG = "transmitter";
 
@@ -164,11 +164,11 @@ esp_err_t readings_init() {
 
 /**
  * Battery id adc[0]
- * raw 557 = 3913 mV (on the bsttery)
- * so 1 = 7.02513465 mV
+ * raw 484 = 3619 mV (on the battery)
+ * so 1 = 7.477272727 mV
  */
 static uint16_t adc2Batt(uint16_t val) {
-  return val * 7.02513465;
+  return val * 7.477272727;
 }
 
 /* Prepare ESPNOW data to be sent. */
