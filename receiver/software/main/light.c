@@ -9,6 +9,8 @@
 
 #include "display.h"
 
+//static const char *TAG = "light";
+
 static void light_task(void *data) {
   uint16_t val;
 
@@ -17,9 +19,9 @@ static void light_task(void *data) {
       if (val > 120) {
         Display_on(&hdisplay);
       } else if (val < 100) {
-        //Display_off(&hdisplay);
+        Display_off(&hdisplay);
       }
-      // ESP_LOGI(TAG, "adc read: %d", val);
+      //ESP_LOGI(TAG, "adc read: %d", val);
     }
     vTaskDelay(500 / portTICK_RATE_MS);
   }

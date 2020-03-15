@@ -7,8 +7,11 @@
 DISPLAY_HandleTypeDef hdisplay;
 
 void Display_update(DISPLAY_HandleTypeDef *hdisplay) {
-    // Write 8-bit data to the shift register.
-    uint32_t buf = hdisplay->pixels << 16;
+    uint32_t buf = 0;
+    if (hdisplay->state == DISPLAY_STATE_ON) {
+      // Write 8-bit data to the shift register.
+      buf = hdisplay->pixels << 16;
+    }
     spi_trans_t trans = {0};
     trans.mosi = &buf;
     trans.bits.mosi = 16;
