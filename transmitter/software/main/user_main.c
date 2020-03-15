@@ -164,11 +164,11 @@ esp_err_t readings_init() {
 
 /**
  * Battery id adc[0]
- * raw 484 = 3619 mV (on the battery)
- * so 1 = 7.477272727 mV
+ * raw 568 = 4064 mV (on the battery)
+ * so 1 = 7.154929577 mV
  */
 static uint16_t adc2Batt(uint16_t val) {
-  return val * 7.477272727;
+  return val * 7.154929577;
 }
 
 /* Prepare ESPNOW data to be sent. */
